@@ -1,0 +1,5 @@
+int32 number
+float64 radius
+float64 thetamin
+float64 thetamax
+---
