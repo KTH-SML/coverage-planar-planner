@@ -100,7 +100,7 @@ class Sensor(object):
     def draw(self,
             draw_orientation=True,
             scale=10.0,
-            alpha=0.5,
+            alpha=0.75,
             color=None
             ):
         if color==None:

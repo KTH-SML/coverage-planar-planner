@@ -7,7 +7,7 @@ def normalize(array):
     norm = np.linalg.norm(array)
     if norm < 0.99 or norm > 1.01:
             wrn.warn('This does not seem to be a unit vector.')
-            wrn.warn('The vecotr will be normalized.')
+            wrn.warn('The vector will be normalized.')
     if norm <= 0.01:
         wrn.warn('The norm is too small.')
         wrn.warn('Setting the vector to (1,0).')
@@ -21,3 +21,10 @@ def saturate(array, ths):
     if norm > ths:
         array *= ths/norm
     return array
+    
+    
+    
+def perp(array):
+    x = array[0]
+    y = array[1]
+    return np.array([-y, x])

@@ -4,6 +4,8 @@
 import rospy as rp
 import coverage_planar_planner.msg as cms
 
+import utilities as uts
+
 import numpy as np
 
 
@@ -30,12 +32,13 @@ def work():
     new_time = rp.get_time()
     dt = new_time - time
     position += lin_vel*dt
-    orientation += np.cross(orientation,np.eye(2)).dot(np.ones(2))*ang_vel*dt
+    orientation += uts.perp(orientation)*ang_vel*dt
+    orientation = uts.normalize(orientation)
     pose = cms.Pose(position=position, orientation=orientation)
     pose_pub.publish(pose)
     time = new_time
     
-rate = rp.Rate(6e1)
+rate = rp.Rate(6e3)
 
 while not rp.is_shutdown():
     work()

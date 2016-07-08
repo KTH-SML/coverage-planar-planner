@@ -183,7 +183,7 @@ class ConvexFootprint(Footprint):
 
     def __init__(self,
             best_distance=1.0,
-            front_gain=0.1,
+            front_gain=0.05,
             rear_gain=1.0,
             facet_gain=0.0):
         if rear_gain < front_gain:

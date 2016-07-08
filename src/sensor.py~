@@ -100,7 +100,7 @@ class Sensor(object):
     def draw(self,
             draw_orientation=True,
             scale=10.0,
-            alpha=1.0,
+            alpha=0.5,
             color=None
             ):
         if color==None:
@@ -119,7 +119,7 @@ class Sensor(object):
 	            head_length=scale*0.03,
 	            alpha=alpha,
 	            facecolor=color,
-	            edgecolor='black')
+	            edgecolor=color)
         return point, arrow
         
         
