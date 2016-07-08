@@ -32,6 +32,8 @@ KN = rp.get_param('orientation_gain', 0.5)
 SP = rp.get_param('velocity_saturation', 1.0)
 SN = rp.get_param('angular_velocity_saturation', 0.5)
 
+PARTNER = rp.get_param('partner')
+
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
 
@@ -42,6 +44,40 @@ cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
 
 
+
+
+
+def trade_landmarks_handler(req):
+    global landmarks
+    global sensor
+    global lock
+    your_pos = np.array(req.position)
+    your_ori = np.array(req.orientation)
+    you = sn.Sensor(pos=your_pos, ori=your_ori, fp=fp.ConvexFootprint())
+    your_lmks = [lm.Landmark.from_msg(lmkmsg) for lmkmsg in req.request]
+    mine = set()
+    yours = set()
+    lock.acquire()
+    for lmk in landmarks:
+        if you.perception(lmk) > sensor.perception(lmk):
+            yours.add(lmk)
+        else:
+            mine.add(lmk)
+    for lmk in your_lmks:
+        if sensor.perception(lmk) > you.perception(lmk):
+            mine.add(lmk)
+        else:
+            yours.add(lmk)
+    landmarks = mine
+    lock.release()
+    return csv.TradeLandmarksResponse(your_landmarks=yours)
+    
+trade_srv = rp.Service(
+    'trade_landamrks',
+    csv.TradeLandmarks,
+    trade_landmarks_handler)
+
+trade_proxy = rp.ServiceProxy()
 
 
 

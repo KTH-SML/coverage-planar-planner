@@ -2,11 +2,10 @@
 
 
 import rospy as rp
-import coverage_planner.msg as cms
+import coverage_planar_planner.msg as cms
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d
 import threading as thd
 
 import landmark as lm
@@ -15,17 +14,15 @@ import sensor as sn
 rp.init_node('plotter_node')
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
-ZLIM = rp.get_param('zlim', (0,10))
+NAMES = rp.get_param('names', 'Axel').split()
 
 plt.ion()
 fig = plt.figure()
-ax = plt.gca(projection='3d')
-ax.set_xlim3d(*XLIM)
-ax.set_ylim3d(*YLIM)
-ax.set_zlim3d(*ZLIM)
-ax.set_xlabel(r'$x$')
-ax.set_ylabel(r'$y$')
-ax.set_zlabel(r'$z$')
+plt.xlabel(r'$x$')
+plt.ylabel(r'$y$')
+plt.axis('equal')
+plt.axis(XLIM+YLIM)
+plt.grid()
 
 lock = thd.Lock()
 
@@ -35,7 +32,7 @@ def pose_cb(pose):
     global sensor
     global draw_sensor_flag
     p = np.array(pose.position)
-    n = np.array([np.cos(pose.yaw), np.sin(pose.yaw), 0.0])
+    n = np.array(pose.orientation)
     lock.acquire()
     sensor.pos = p
     sensor.ori = n
@@ -74,7 +71,7 @@ def work():
             lp.remove()
             if not la == None:
                 la.remove()
-        lmks_artists = [lmk.draw() for lmk in landmarks]
+        lmks_artists = [lmk.draw(draw_orientation=False) for lmk in landmarks]
         draw_landmarks_flag = False
     lock.release()
     plt.draw()
@@ -82,7 +79,7 @@ def work():
 
 
 
-rate = rp.Rate(1e1)
+rate = rp.Rate(6e1)
 if __name__ == '__main__':
     while not rp.is_shutdown():
         work()

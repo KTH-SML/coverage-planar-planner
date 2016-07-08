@@ -79,7 +79,7 @@ class Landmark(object):
     def draw(self,
             draw_orientation=True,
             scale=1.0,
-            alpha=0.3,
+            alpha=0.5,
             color=None
             ):
 
@@ -88,7 +88,7 @@ class Landmark(object):
         x = self.pos[0]
         y = self.pos[1]
         point = plt.scatter(x,y,
-            s=scale*5.0,
+            s=scale*10.0,
             marker='o',
             color=color,
             alpha=alpha)

@@ -62,8 +62,9 @@ add_service_files(
   AddLandmark.srv
   ChangeLandmarks.srv
   ChangeGains.srv
-  AddRandomLandmark.srv
+  AddRandomLandmarks.srv
   AddLandmarkArc.srv
+  TradeLandmarks.srv
 )
 
 ## Generate actions in the 'action' folder

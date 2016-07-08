@@ -1,0 +1,84 @@
+<launch>
+
+<group ns='Axel'>
+
+<rosparam param="initial_position">[0.0, 1.0]</rosparam>
+<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam param="partner">'Bo'</rosparam>
+
+<node name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+>
+</node>
+
+<node
+name='plot_pose'
+pkg='rqt_plot'
+type='rqt_plot'
+args='pose/position pose/yaw'
+/>
+
+<node
+name='plot_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='coverage'
+/>
+
+</group>
+
+<group ns='Bo'>
+
+<rosparam param="initial_position">[0.0, -1.0]</rosparam>
+<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam param="partner">'Axel'</rosparam>
+
+<node
+name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+>
+</node>
+
+<node
+name='plot_pose'
+pkg='rqt_plot'
+type='rqt_plot'
+args='pose/position pose/yaw'
+/>
+
+<node
+name='plot_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='coverage'
+/>
+
+</group>
+
+<node
+name='multiple_plotter_node'
+pkg='coverage_planar_planner'
+type='multiple_plotter_node.py'
+/>
+
+<node
+name='rqt_service_caller'
+pkg='rqt_service_caller'
+type='rqt_service_caller'
+/>
+
+</launch>

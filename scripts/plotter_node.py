@@ -11,16 +11,16 @@ import threading as thd
 import landmark as lm
 import sensor as sn
 
-rp.init_node('plotter_xy_node')
-xlim = rp.get_param('xlim', (-5,5))
-ylim = rp.get_param('ylim', (-5,5))
+rp.init_node('plotter_node')
+XLIM = rp.get_param('xlim', (-5,5))
+YLIM = rp.get_param('ylim', (-5,5))
 
 plt.ion()
 fig = plt.figure()
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
-plt.xlim(xlim)
-plt.ylim(ylim)
+plt.axis('equal')
+plt.axis(XLIM+YLIM)
 plt.grid()
 
 lock = thd.Lock()
@@ -70,7 +70,7 @@ def work():
             lp.remove()
             if not la == None:
                 la.remove()
-        lmks_artists = [lmk.draw() for lmk in landmarks]
+        lmks_artists = [lmk.draw(draw_orientation=False) for lmk in landmarks]
         draw_landmarks_flag = False
     lock.release()
     plt.draw()
@@ -78,7 +78,7 @@ def work():
 
 
 
-rate = rp.Rate(1e1)
+rate = rp.Rate(6e1)
 if __name__ == '__main__':
     while not rp.is_shutdown():
         work()
