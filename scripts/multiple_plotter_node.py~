@@ -3,6 +3,7 @@
 
 import rospy as rp
 import coverage_planar_planner.msg as cms
+import coverage_planar_planner.srv as csv
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,14 +12,17 @@ import threading as thd
 import landmark as lm
 import sensor as sn
 
+
+
 rp.init_node('plotter_node')
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
 NAMES = rp.get_param('names').split()
-COLORS = rp.get_param('colors', '#1f618d #cb4335 #b7950b #1d8348').split()
+COLORS = rp.get_param('colors', '#1f618d #cb4335 #b7950b #186a3b').split()
 COLDIC = dict()
 for index, name in enumerate(NAMES):
     COLDIC[name] = COLORS[index]
+
 
 
 plt.ion()
@@ -28,6 +32,7 @@ plt.ylabel(r'$y$')
 plt.axis('equal')
 plt.axis(XLIM+YLIM)
 plt.grid()
+
 
 sensor_locks = dict()
 landmarks_locks = dict()
@@ -41,6 +46,9 @@ draw_sensor_flags = dict()
 for name in NAMES:
     sensors[name] = sn.Sensor(color=COLDIC[name])
     draw_sensor_flags[name] = True
+
+
+
 
 def pose_cb(pose, name):
     global sensors
@@ -69,23 +77,47 @@ for name in NAMES:
     landmarks[name] = set()
     draw_landmarks_flags[name] = True
     
-def landmarks_cb(msg, name):
+#def landmarks_cb(msg, name):
+#    global landmarks
+#    global draw_landmarks_flags
+#    global landmarks_locks
+#    landmarks_locks[name].acquire()
+#    landmarks[name] = [lm.Landmark.from_msg(datum) for datum in msg.data]
+#    draw_landmarks_flags[name] = True
+#    landmarks_locks[name].release()
+
+#landmarks_subs = [
+#    rp.Subscriber(
+#        name+'/landmarks',
+#        cms.LandmarkArray,
+#        landmarks_cb,
+#        callback_args=name)
+#    for name in NAMES
+#]
+
+
+
+def draw_landmarks_handler(msg):
     global landmarks
     global draw_landmarks_flags
-    global landmarks_locks
+    global landmarks_locks,
+    name = msg.name
     landmarks_locks[name].acquire()
-    landmarks[name] = [lm.Landmark.from_msg(datum) for datum in msg.data]
+    landmarks[name] = [lm.Landmark.from_msg(datum) for datum in msg.landmarks]
     draw_landmarks_flags[name] = True
     landmarks_locks[name].release()
+    return csv.DrawLandmarksResponse()
 
-landmarks_subs = [
-    rp.Subscriber(
-        name+'/landmarks',
-        cms.LandmarkArray,
-        landmarks_cb,
-        callback_args=name)
-    for name in NAMES
-]
+
+draw_landmarks_service = rp.Service(
+    'draw_landmarks',
+    csv.DrawLandmarks,
+    draw_landmarks_handler)
+
+
+
+
+
 
 points = dict()
 arrows = dict()

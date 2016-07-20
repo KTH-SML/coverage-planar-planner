@@ -52,6 +52,12 @@ def landmarks_cb(msg):
 landmarks_sub = rp.Subscriber('landmarks', cms.LandmarkArray, landmarks_cb)
 
 
+
+
+
+
+
+
 point, arrow = sensor.draw()
 lmks_artists = [lmk.draw() for lmk in landmarks]
 def work():

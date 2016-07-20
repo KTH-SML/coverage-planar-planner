@@ -14,7 +14,6 @@ import sensor as sn
 rp.init_node('plotter_node')
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
-NAMES = rp.get_param('names', 'Axel').split()
 
 plt.ion()
 fig = plt.figure()

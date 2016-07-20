@@ -26,9 +26,9 @@ sensor = sn.Sensor(fp=fp.ConvexFootprint())
 rp.init_node('planner_node')
 
 KP = rp.get_param('position_gain', 3.0)
-KN = rp.get_param('orientation_gain', 3.0)
+KN = rp.get_param('orientation_gain', 1.5)
 SP = rp.get_param('velocity_saturation', 1.0)
-SN = rp.get_param('angular_velocity_saturation', 1.0)
+SN = rp.get_param('angular_velocity_saturation', 0.5)
 
 NAMES = rp.get_param('/names').split()
 MY_NAME = rp.get_param('name')
@@ -43,7 +43,11 @@ vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
 cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
-
+rp.wait_for_service('/draw_landmarks')
+draw_landmarks_proxy = rp.ServiceProxy(
+    '/draw_landmarks',
+    csv.DrawLandmarks)
+    
 
 
 
@@ -90,6 +94,7 @@ def trade_landmarks_handler(req):
     global sensor
     global lock
     global PARTNERS, possible_partners
+    global MY_NAME
     your_pos = np.array(req.position)
     your_ori = np.array(req.orientation)
     you = sn.Sensor(pos=your_pos, ori=your_ori, fp=fp.ConvexFootprint())
@@ -114,6 +119,10 @@ def trade_landmarks_handler(req):
         landmarks = mine
         possible_partners = list(PARTNERS)
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = MY_NAME,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.TradeLandmarksResponse(
         success = success,
         your_landmarks=[lmk.to_msg() for lmk in yours])
@@ -153,6 +162,10 @@ def add_landmark_arc_handler(req):
         possible_partners = list(PARTNERS)
         landmarks |= lmks
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = MY_NAME,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.AddLandmarkArcResponse()
 
 add_lma_srv = rp.Service(
@@ -179,6 +192,10 @@ def add_random_landmarks_handler(req):
         rp.logwarn(MY_NAME + ': reset partners: ' + str(possible_partners))
     landmarks |= new_lmks
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = MY_NAME,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.AddRandomLandmarksResponse()
     
 add_lmk_srv = rp.Service(
@@ -227,7 +244,12 @@ def add_landmark_handler(req):
     possible_partners = list(PARTNERS)
     landmarks.add(lmk)
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = MY_NAME,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.AddLandmarkResponse()
+    
 add_lmk_srv = rp.Service(
     'add_landmark',
     csv.AddLandmark,
@@ -241,7 +263,12 @@ def change_landmarks_handler(req):
     lock.acquire()
     landmarks = set(lmks)
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = MY_NAME,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.ChangeLandmarksResponse()
+    
 chg_lmk_srv = rp.Service(
     'change_landmarks',
     csv.ChangeLandmarks,
@@ -258,8 +285,8 @@ chg_lmk_srv = rp.Service(
 
 
 
-FAST_RATE = rp.Rate(6e3)
-SLOW_RATE = rp.Rate(6e3)
+FAST_RATE = rp.Rate(6e1)
+SLOW_RATE = rp.Rate(0.5)
 
 def work():
     global sensor, landmarks
@@ -290,23 +317,30 @@ def work():
             request = csv.TradeLandmarksRequest(p, n, [lmk.to_msg() for lmk in landmarks])
             partner = rdm.choice(possible_partners)
             rp.logwarn(MY_NAME + ': request trade with ' + partner)
-            response = trade_proxies[partner](request)
-            if response.success:
-                possible_partners = list(PARTNERS)
-                landmarks = set([
-                    lm.Landmark.from_msg(item) for item in response.your_landmarks])
-            else:
-                possible_partners.remove(partner)
+            try:
+                response = trade_proxies[partner](request)
+                if response.success:
+                    possible_partners = list(PARTNERS)
+                    landmarks = set([
+                        lm.Landmark.from_msg(item) for item in response.your_landmarks])
+                    msg = csv.DrawLandmarksRequest(
+                        name = MY_NAME,
+                        landmarks = [lmk.to_msg() for lmk in landmarks])
+                    draw_landmarks_proxy(msg)
+                else:
+                    possible_partners.remove(partner)
+            except Exception:
+                rp.logwarn(MY_NAME + ': ' + partner + ' is unavailable')
         else:
             rp.logwarn(MY_NAME + ': no possible partners')
         rate = SLOW_RATE
     else:
         rate = FAST_RATE
-    lmks_msg = [lmk.to_msg() for lmk in landmarks]
+    #lmks_msg = [lmk.to_msg() for lmk in landmarks]
     lock.release()
     cov_vel = cms.Velocity(linear=v, angular=w)
     vel_pub.publish(cov_vel)
-    lmks_pub.publish(lmks_msg)
+    #lmks_pub.publish(lmks_msg)
     cov_pub.publish(coverage)
     rate.sleep()
 
