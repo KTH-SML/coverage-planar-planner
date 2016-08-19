@@ -18,7 +18,7 @@ rp.init_node('plotter_node')
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
 NAMES = rp.get_param('names').split()
-COLORS = rp.get_param('colors', '#1f618d #cb4335 #b7950b #186a3b').split()
+COLORS = rp.get_param('colors', '#1f618d #cb4335 #b7950b #659D32').split()
 COLDIC = dict()
 for index, name in enumerate(NAMES):
     COLDIC[name] = COLORS[index]
@@ -100,7 +100,7 @@ for name in NAMES:
 def draw_landmarks_handler(msg):
     global landmarks
     global draw_landmarks_flags
-    global landmarks_locks,
+    global landmarks_locks
     name = msg.name
     landmarks_locks[name].acquire()
     landmarks[name] = [lm.Landmark.from_msg(datum) for datum in msg.landmarks]

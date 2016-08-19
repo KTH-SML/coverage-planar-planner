@@ -19,17 +19,23 @@ class Landmark(object):
         self._ori = uts.normalize(ori)
         self._color = color
 
+
     @classmethod
     def from_msg(cls, msg):
+        """Constructs a Landmark object from a Landmark ROS message."""
         pos = np.array(msg.position)
         ori = uts.normalize(np.array(msg.orientation))
         return cls(pos, ori)
+
         
     @classmethod
     def random(cls,
             xlim=(-1.0, 1.0),
             ylim=(-1.0, 1.0),
             ):
+        """Constructs a Landmark object with random position and orientation.
+        The position is chosen within the given boundaries.
+        """
         x = rdm.uniform(*xlim)
         y = rdm.uniform(*ylim)
         pos = np.array([x,y])
@@ -37,6 +43,7 @@ class Landmark(object):
         return cls(pos, ori)
 
     def to_msg(self):
+        """Converts a Landmark object into a Landmark ROS message."""
         msg = cms.Landmark(position=self._pos, orientation=self._ori)
         return msg
 
@@ -79,19 +86,25 @@ class Landmark(object):
     def draw(self,
             draw_orientation=True,
             scale=1.0,
-            alpha=0.5,
+            alpha=0.6,
             color=None
             ):
+        """Draws the landmark as a point.
+        If `draw_orientation` is `True`, it draws the orientation as an arrow.
+        """
 
         if color==None:
             color=self._color
         x = self.pos[0]
         y = self.pos[1]
         point = plt.scatter(x,y,
-            s=scale*10.0,
-            marker='o',
+            s=scale*18.0,
+            marker='s',
             color=color,
-            alpha=alpha)
+            alpha=alpha,
+            edgecolor=color,
+            linewidth=2
+            )
         arrow = None
         if draw_orientation:
             vec = self._ori*scale*0.5

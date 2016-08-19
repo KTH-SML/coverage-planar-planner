@@ -100,14 +100,13 @@ for name in NAMES:
 def draw_landmarks_handler(msg):
     global landmarks
     global draw_landmarks_flags
-    global landmarks_locks,
+    global landmarks_locks
     name = msg.name
     landmarks_locks[name].acquire()
     landmarks[name] = [lm.Landmark.from_msg(datum) for datum in msg.landmarks]
     draw_landmarks_flags[name] = True
     landmarks_locks[name].release()
     return csv.DrawLandmarksResponse()
-
 
 draw_landmarks_service = rp.Service(
     'draw_landmarks',

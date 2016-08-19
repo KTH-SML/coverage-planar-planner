@@ -1,7 +1,0 @@
-float64[2] position
-float64[2] orientation
-Landmark[] landmarks
----
-bool result
-Landmark[] your_landmarks
-

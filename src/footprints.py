@@ -11,14 +11,8 @@ class Footprint(object):
     """
 
 
-    @classmethod
-    def formula(cls):
-        raise NotImplementedError()
-
-
     def __str__(self):
         string = self.__class__.__name__
-        string += "\n" + self.formula()
         return string
 
 
@@ -80,12 +74,11 @@ class Footprint(object):
         
     def contour_plot(
             self,
-            p=np.zeros(3),
-            n=np.array([1,0,0]),
-            qz_func = None,
+            p=np.zeros(2),
+            n=np.array([1.0,0.0]),
             m_func = None,
-            xlim = (-1,1),
-            ylim = (-1,1),
+            xlim = (-1.0,1.0),
+            ylim = (-1.0,1.0),
             num_points = 100,
             filename = None
             ):
@@ -109,9 +102,6 @@ class Footprint(object):
         if m_func == None:
             def m_func(q):
                 return n
-        if qz_func == None:
-            def qz_func(qx,qy):
-                return 0
         if filename == None:
             filename = self.__class__.__name__ + '.pdf'
         xvec = np.linspace(p[0]+xlim[0], p[0]+xlim[1], num=num_points)
@@ -119,34 +109,35 @@ class Footprint(object):
         zmat = np.zeros((len(xvec), len(yvec)))
         for i, x in enumerate(xvec):
 	        for j, y in enumerate(yvec):
-		        q = np.array([x, y, qz_func(x,y)])
+		        q = np.array([x, y])
 		        m = m_func(q)
 		        zmat[j][i] = self.val(p, n, q, m)
         cs = plt.contour(xvec,yvec,zmat,20)
         plt.xlabel('$q_x$')
         plt.ylabel('$q_y$')
-        #plt.axis('equal')
+        plt.axis('equal')
         plt.colorbar(cs)
         plt.grid()
         plt.savefig(filename)
         
 
 
-class SphericalFootprint(Footprint):
 
-    @classmethod
-    def formula(cls):
-        string = "f(p,n,q,m)=||p+b*n-q||^2+||p+b*m-q||^2"
-        string += "\nb: best distance"
-        return string
+
+class SphericalFootprint(Footprint):
+    r"""A footprint with spherical level sets.
+    Formula in pseudo-latex is
+    
+    $f(p,n,q,m)=\norm{p+\beta n-q}^2+\norm{p+\beta m-q}^2$,
+    
+    where $\beta>0$ is the best distance."""
 
     def __init__(self, best_distance=1.0):
         self._BEST_DISTANCE = best_distance
         
     def val(self, p, n, q, m):
         BD = self._BEST_DISTANCE
-        return np.linalg.norm(p+BD*n-q)**2 +\
-        np.linalg.norm(p+BD*m-q)**2
+        return np.linalg.norm(p+BD*n-q)**2 + np.linalg.norm(p+BD*m-q)**2
         
     def pos_grad(self, p, n, q, m):
         BD = self._BEST_DISTANCE
@@ -167,37 +158,51 @@ class SphericalFootprint(Footprint):
         
 
 
-class ConvexFootprint(Footprint):
-
-    @classmethod
-    def formula(cls):
-        string = """
-            f(p,n,q,m) = 
-            kf||p+bn-q||^2
-            + (kr-kf)/2||p+bn-q||(||p+bn-q||+(p+bn-q)*n)
-            """
-        string += "\nb: best distance"
-        string += "\nkf: front gain"
-        string += "\nkr: rear gain"
-        return string
+class EggFootprint(Footprint):
+    r"""A footprint with egg shaped level sets.
+    Formula in pseudo-latex is
+    
+    $f(p,n,q,m) = 
+        \frac{k_f+k_r}{2} \norm{p+\beta n-q}^2
+        + \frac{k_r-k_f}{2}\norm{p+\beta n-q} \paren{
+            \norm{p+\beta n-q} + (p+\beta n-q)\T n 
+            }
+        + \sigma\paren{
+            \frac{k_f+k_r}{2} \norm{p+\beta m-q}^2
+            + \frac{k_r-k_f}{2}\norm{p+\beta n-q} \paren{
+                \norm{p+\beta n-q} + (p+\beta n-q)\T n
+                }
+            }
+    $,
+    
+    where:
+    
+        $\beta > 0$ is the best distance;
+        $k_f, k_r > 0$ are the front and rear gain respectively;
+            usually $k_f < k_r$;
+        $\sigma > 0$ is the scale factor of the cost of bad alignment with
+            the landmark's orientation.
+    
+    """
 
     def __init__(self,
             best_distance=1.0,
-            front_gain=0.01,
+            front_gain=0.1,
             rear_gain=1.0,
-            facet_gain=0.0):
+            orientation_scale_factor=0.0):
         if rear_gain < front_gain:
             wrn.warn('The rear gain is smaller than the front gain.')
         self._BEST_DISTANCE = best_distance
         self._FRONT_GAIN = front_gain
         self._REAR_GAIN = rear_gain
-        self._FACET_GAIN = facet_gain
+        self._ORIENTATION_SCALE_FACTOR = orientation_scale_factor
+       
         
     def val(self, p, n, q, m):
         BD = self._BEST_DISTANCE
         FG = self._FRONT_GAIN
         RG = self._REAR_GAIN
-        MG = self._FACET_GAIN
+        MG = self._ORIENTATION_SCALE_FACTOR
         vec = p+BD*n-q
         norm = np.linalg.norm(vec)
         one = (FG+RG)/2*norm**2
@@ -207,12 +212,13 @@ class ConvexFootprint(Footprint):
         three = (FG+RG)/2*norm**2
         four = (RG-FG)/2*norm*vec.dot(m)
         return one + two + MG*(three + four)
+       
         
     def pos_grad(self, p, n, q, m):
         BD = self._BEST_DISTANCE
         FG = self._FRONT_GAIN
         RG = self._REAR_GAIN
-        MG = self._FACET_GAIN
+        MG = self._ORIENTATION_SCALE_FACTOR
         vec = p+BD*n-q
         norm = np.linalg.norm(vec)
         one = (FG+RG)*vec
@@ -228,6 +234,7 @@ class ConvexFootprint(Footprint):
         else:
             four = (RG-FG)/2*(vec.dot(m)*vec/norm+norm*m)
         return one + two + MG*(three + four)
+       
         
     def ori_grad(self, p, n, q, m):
         BD = self._BEST_DISTANCE
@@ -246,15 +253,15 @@ class ConvexFootprint(Footprint):
     def contour_plot(self, **kwargs):
         BD = self._BEST_DISTANCE
         xlim = (-BD+BD,4.0*BD+BD)
-        ylim = (-BD,BD)
+        ylim = (-2.5*BD,2.5*BD)
         Footprint.contour_plot(self, xlim=xlim, ylim=ylim, **kwargs)
         
         
 
 
-"""Test."""
+
 if __name__ == '__main__':
-    fp = ConvexFootprint()
+    fp = EggFootprint()
     print fp
     plt.figure()
     #def m_func(q):

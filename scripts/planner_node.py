@@ -21,14 +21,14 @@ import utilities as uts
 lock = thd.Lock()
 #landmarks = set([lm.Landmark(ori=[-1,0.1])])
 landmarks = set()
-sensor = sn.Sensor(fp=fp.ConvexFootprint())
+sensor = sn.Sensor(fp=fp.EggFootprint())
 
 
 
 rp.init_node('planner_node')
 
-KP = rp.get_param('position_gain', 1.0)
-KN = rp.get_param('orientation_gain', 0.5)
+KP = rp.get_param('position_gain', 3.0)
+KN = rp.get_param('orientation_gain', 1.0)
 SP = rp.get_param('velocity_saturation', 1.0)
 SN = rp.get_param('angular_velocity_saturation', 0.5)
 
@@ -37,10 +37,13 @@ YLIM = rp.get_param('ylim', (-5,5))
 
 
 vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
-lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
+#lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
 cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
-
+rp.wait_for_service('/draw_landmarks')
+draw_landmarks_proxy = rp.ServiceProxy(
+    '/draw_landmarks',
+    csv.DrawLandmarks)
 
 
 
@@ -65,6 +68,10 @@ def add_landmark_arc_handler(req):
     lock.acquire()
     landmarks |= lmks
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = None,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.AddLandmarkArcResponse()
 
 add_lma_srv = rp.Service(
@@ -76,20 +83,26 @@ add_lma_srv = rp.Service(
 
 
 
-def add_random_landmark_handler(req):
+def add_random_landmarks_handler(req):
     global landmarks
     global lock
-    lmk = lm.Landmark.random(
-    	xlim=0.3*np.array(XLIM),
-    	ylim=0.3*np.array(YLIM))
+    lmks = [lm.Landmark.random(
+	    	xlim=0.3*np.array(XLIM),
+	    	ylim=0.3*np.array(YLIM))
+    	for index in range(req.num)]
     lock.acquire()
-    landmarks.add(lmk)
+    landmarks |= set(lmks)
     lock.release()
-    return csv.AddRandomLandmarkResponse()
+    msg = csv.DrawLandmarksRequest(
+        name = None,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
+    return csv.AddRandomLandmarksResponse()
+
 add_lmk_srv = rp.Service(
-    'add_random_landmark',
-    csv.AddRandomLandmark,
-    add_random_landmark_handler
+    'add_random_landmarks',
+    csv.AddRandomLandmarks,
+    add_random_landmarks_handler
 )
 
 
@@ -130,6 +143,10 @@ def add_landmark_handler(req):
     lock.acquire()
     landmarks.add(lmk)
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = None,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.AddLandmarkResponse()
 add_lmk_srv = rp.Service(
     'add_landmark',
@@ -144,6 +161,10 @@ def change_landmarks_handler(req):
     lock.acquire()
     landmarks = set(lmks)
     lock.release()
+    msg = csv.DrawLandmarksRequest(
+        name = None,
+        landmarks = [lmk.to_msg() for lmk in landmarks])
+    draw_landmarks_proxy(msg)
     return csv.ChangeLandmarksResponse()
 chg_lmk_srv = rp.Service(
     'change_landmarks',
@@ -176,17 +197,17 @@ def work():
         w = 0.0
     else:
         #v = -smart_gain(coverage,KP/10,KP)*sensor.cov_pos_grad(landmarks)
-        v = -KP*sensor.cov_pos_grad(landmarks)
+        v = -KP/len(landmarks)*sensor.cov_pos_grad(landmarks)
         v = uts.saturate(v,SP)
         #w = -smart_gain(coverage,KN/10,KN)*np.cross(n, sensor.cov_ori_grad(landmarks))
-        w = -KN*np.cross(n, sensor.cov_ori_grad(landmarks))
+        w = -KN/len(landmarks)*np.cross(n, sensor.cov_ori_grad(landmarks))
         w = uts.saturate(w, SN)
     coverage = sensor.coverage(landmarks)
     lmks_msg = [lmk.to_msg() for lmk in landmarks]
     lock.release()
     cov_vel = cms.Velocity(linear=v, angular=w)
     vel_pub.publish(cov_vel)
-    lmks_pub.publish(lmks_msg)
+    #lmks_pub.publish(lmks_msg)
     cov_pub.publish(coverage)
 
 

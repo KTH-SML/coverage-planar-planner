@@ -5,8 +5,8 @@
 <group ns='Axel'>
 
 <rosparam param='name'>'Axel'</rosparam>
-<rosparam param="initial_position">[-1.0, -1.0]</rosparam>
-<rosparam param="initial_orientation">[1.0, 1.0]</rosparam>
+<rosparam param="initial_position">[0.0, 0.0]</rosparam>
+<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
 
 <node name='planner_node'
 pkg='coverage_planar_planner'
@@ -28,8 +28,8 @@ type='simulator_node.py'
 <group ns='Bo'>
 
 <rosparam param='name'>'Bo'</rosparam>
-<rosparam param="initial_position">[1.0, -1.0]</rosparam>
-<rosparam param="initial_orientation">[-1.0, 1.0]</rosparam>
+<rosparam param="initial_position">[0.0, 0.0]</rosparam>
+<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
 
 <node
 name='planner_node'
@@ -53,8 +53,8 @@ type='simulator_node.py'
 <group ns='Calle'>
 
 <rosparam param='name'>'Calle'</rosparam>
-<rosparam param="initial_position">[-1.0, 1.0]</rosparam>
-<rosparam param="initial_orientation">[1.0, -1.0]</rosparam>
+<rosparam param="initial_position">[0.0, 0.0]</rosparam>
+<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
 
 <node
 name='planner_node'
@@ -80,8 +80,8 @@ type='simulator_node.py'
 <group ns='David'>
 
 <rosparam param='name'>'David'</rosparam>
-<rosparam param="initial_position">[1.0, 1.0]</rosparam>
-<rosparam param="initial_orientation">[-1.0, -1.0]</rosparam>
+<rosparam param="initial_position">[0.0, 0.0]</rosparam>
+<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
 
 <node name='planner_node'
 pkg='coverage_planar_planner'

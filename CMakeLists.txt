@@ -64,7 +64,7 @@ add_service_files(
   ChangeGains.srv
   AddRandomLandmarks.srv
   AddLandmarkArc.srv
-  TradeLandmarks.srv
+  TakeLandmarks.srv
   DrawLandmarks.srv
 )
 

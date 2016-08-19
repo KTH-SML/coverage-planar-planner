@@ -13,7 +13,7 @@ class Sensor(object):
 	        self,
 	        pos=np.array([0.0,0.0]),
 	        ori=np.array([1.0,0.0]),
-	        fp=fps.ConvexFootprint(),
+	        fp=fps.EggFootprint(),
 	        color = 'black',
 	        landmarks = []
 	        ):
@@ -100,7 +100,7 @@ class Sensor(object):
     def draw(self,
             draw_orientation=True,
             scale=10.0,
-            alpha=0.75,
+            alpha=1,
             color=None
             ):
         if color==None:
@@ -109,8 +109,10 @@ class Sensor(object):
         y = self.pos[1]
         point = plt.scatter(x,y,
             s=75.0,
-            color=color,
-            alpha=alpha)
+            color='#121f1f',
+            alpha=alpha,
+            edgecolor='#121f1f',
+            linewidth=2)
         arrow = None
         if draw_orientation:
             vec = self._ori*0.5
@@ -119,7 +121,8 @@ class Sensor(object):
 	            head_length=scale*0.03,
 	            alpha=alpha,
 	            facecolor=color,
-	            edgecolor=color)
+	            edgecolor='#121f1f',
+	            linewidth=2)
         return point, arrow
         
         
