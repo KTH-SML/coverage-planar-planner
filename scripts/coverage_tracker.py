@@ -43,7 +43,7 @@ def work():
     
     
     
-rate = rp.Rate(1e1)
+rate = rp.Rate(1e2)
 if __name__ == '__main__':
     while not rp.is_shutdown():
         work()

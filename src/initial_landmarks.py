@@ -21,7 +21,8 @@ for index in range(NUM_LANDMARKS_SQRT**2):
 	pos = (x,y)
 	ori = (1,0)
 	lmk = lm.Landmark(pos, ori)
-	landmarks[rdm.choice(landmarks.keys())].add(lmk)
+	#landmarks[rdm.choice(landmarks.keys())].add(lmk)
+	landmarks["Axel"].add(lmk)
 
 
 if __name__ == '__main__':

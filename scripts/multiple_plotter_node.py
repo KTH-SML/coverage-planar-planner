@@ -134,11 +134,17 @@ for name in NAMES:
         for lmk in landmarks[name]]
     landmarks_locks[name].release()
     
+    
+
+save_times = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0] + [
+    10.0+5.0*i for i in range(20)]
+save_counter = 0
 def work():
     global points, arrows, lmks_artists
     global draw_sensor_flags, draw_landmarks_flags
     global sensors, landmarks
     global sensor_locks, landmarks_locks
+    global save_interval, last_save_time, save_counter, initial_time
     for name in NAMES:
         sensor_locks[name].acquire()
         if draw_sensor_flags[name]:
@@ -163,12 +169,19 @@ def work():
             draw_landmarks_flags[name] = False
         landmarks_locks[name].release()
     plt.draw()
+    if save_counter < len(save_times):
+        time = rp.get_time()-initial_time
+        ths = save_times[save_counter]
+        if time > save_times[save_counter]:
+            save_counter += 1
+            plt.savefig("coverageplot" + str(int(10*ths)) + ".pdf")
 
 
 
 
-rate = rp.Rate(6e1)
+rate = rp.Rate(10e1)
 if __name__ == '__main__':
+    initial_time = rp.get_time()
     while not rp.is_shutdown():
         work()
         rate.sleep()

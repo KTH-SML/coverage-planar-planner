@@ -124,6 +124,35 @@ class Footprint(object):
 
 
 
+
+
+
+
+
+class OmnidirectionalFootprint(Footprint):
+
+    def __init__(self, gain=1.0):
+        self._GAIN = gain
+        
+    def val(self, p, n, q, m):
+        return 0.5*self._GAIN*np.linalg.norm(p-q)**2
+        
+    def pos_grad(self, p, n, q, m):
+        return self._GAIN*(p-q)
+        
+    def ori_grad(self, p, n, q, m):
+        return np.zeros(2)
+
+
+
+
+
+
+
+
+
+
+
 class SphericalFootprint(Footprint):
     r"""A footprint with spherical level sets.
     Formula in pseudo-latex is
@@ -132,20 +161,24 @@ class SphericalFootprint(Footprint):
     
     where $\beta>0$ is the best distance."""
 
-    def __init__(self, best_distance=1.0):
+    def __init__(self, best_distance=1.0, gain=1.0):
+        self._GAIN = gain
         self._BEST_DISTANCE = best_distance
         
     def val(self, p, n, q, m):
         BD = self._BEST_DISTANCE
-        return np.linalg.norm(p+BD*n-q)**2 + np.linalg.norm(p+BD*m-q)**2
+        GAIN = self._GAIN
+        return GAIN*(np.linalg.norm(p+BD*n-q)**2 + np.linalg.norm(p+BD*m-q)**2)
         
     def pos_grad(self, p, n, q, m):
         BD = self._BEST_DISTANCE
-        return 4*p+2*BD*n+2*BD*m-4*q
+        GAIN = self._GAIN
+        return GAIN*(4*p+2*BD*n+2*BD*m-4*q)
         
     def ori_grad(self, p, n, q, m):
         BD = self._BEST_DISTANCE
-        return 2*(p+BD*n-q)*BD
+        GAIN = self._GAIN
+        return GAIN*(2*(p+BD*n-q)*BD)
         
     def contour_plot(self):
         BD = self._BEST_DISTANCE

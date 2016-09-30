@@ -125,5 +125,8 @@ if __name__ == '__main__':
     plt.figure()
     plt.xlim(-5,5)
     plt.ylim(-5,5)
+    print lmk.pos
+    print lmk.ori
+    print lmk.to_msg()
     lmk.draw()
     plt.show()

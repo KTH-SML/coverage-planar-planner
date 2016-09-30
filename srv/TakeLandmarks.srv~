@@ -1,5 +1,0 @@
-Pose client_pose
-Landmark[] client_landmarks
----
-Landmark[] client_new_landmarks
-bool success

@@ -15,6 +15,7 @@ import sensor as sns
 import footprints as fp
 import utilities as uts
 import initial_landmarks as init_lmks
+import initial_sensors as init_sns
 
 
 landmarks = set()
@@ -23,7 +24,7 @@ landmarks_lock = thd.Lock()
 incoming_landmarks = set()
 incoming_landmarks_lock = thd.Lock()
 
-sensor = sns.Sensor(fp=fp.EggFootprint())
+#sensor = sns.Sensor(fp=fp.EggFootprint())
 sensor_lock = thd.Lock()
 
 
@@ -39,6 +40,7 @@ MY_NAME = rp.get_param('name')
 PARTNERS = filter(lambda x: not x == MY_NAME, NAMES)
 possible_partners = list(PARTNERS)
 landmarks = init_lmks.landmarks[MY_NAME]
+sensor = init_sns.sensors[MY_NAME]
 
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
@@ -153,7 +155,7 @@ def take_landmarks_handler(req):
     client = sns.Sensor(
         pos = np.array(req.client_pose.position),
         ori = np.array(req.client_pose.orientation),
-        fp = fp.EggFootprint()
+        fp = init_sns.sensors[req.client_name]._fp
         )
     client_landmarks = [
         lm.Landmark.from_msg(lmk_msg) for lmk_msg in req.client_landmarks
@@ -350,12 +352,13 @@ def work():
         w = uts.saturate(w, sn)
     coverage = sensor.coverage(landmarks)
     sensor_lock.release()
-    if np.linalg.norm(v)+np.linalg.norm(w) < 0.03:
+    if np.linalg.norm(v)+np.linalg.norm(w) < 2e-4*coverage:
         v = np.zeros(2)
         w = 0.0
         rp.logwarn(MY_NAME + ': possible partners: ' + str(possible_partners))
         if len(possible_partners)>0:
             request = csv.TakeLandmarksRequest(
+                MY_NAME,
                 cms.Pose(p,n),
                 [lmk.to_msg() for lmk in landmarks]
                 )
