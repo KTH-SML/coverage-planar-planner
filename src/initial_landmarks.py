@@ -16,8 +16,10 @@ landmarks["David"] = set()
 rdm.seed(89)
 
 for index in range(NUM_LANDMARKS_SQRT**2):
-	x = float(index%NUM_LANDMARKS_SQRT)*(XLIM[1]-XLIM[0])/NUM_LANDMARKS_SQRT+XLIM[0]
-	y = float(index//NUM_LANDMARKS_SQRT)*(YLIM[1]-YLIM[0])/NUM_LANDMARKS_SQRT+YLIM[0]
+	x = float(index%NUM_LANDMARKS_SQRT)*(
+		XLIM[1]-XLIM[0])/NUM_LANDMARKS_SQRT+XLIM[0]
+	y = float(index//NUM_LANDMARKS_SQRT)*(
+		YLIM[1]-YLIM[0])/NUM_LANDMARKS_SQRT+YLIM[0]
 	pos = (x,y)
 	ori = (1,0)
 	lmk = lm.Landmark(pos, ori)

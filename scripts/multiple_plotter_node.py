@@ -1,5 +1,12 @@
 #! /usr/bin/env python
+"""This node plots the sensors and the landmarks with matplotlib.
 
+Subscriptions:
+    - <name>/pose for <name> = Axel, Bo, Calle, David
+
+Services offered:
+    - draw_landmarks
+"""
 
 import rospy as rp
 import coverage_planar_planner.msg as cms
@@ -76,7 +83,7 @@ draw_landmarks_flags = dict()
 for name in NAMES:
     landmarks[name] = set()
     draw_landmarks_flags[name] = True
-    
+
 #def landmarks_cb(msg, name):
 #    global landmarks
 #    global draw_landmarks_flags
@@ -133,8 +140,8 @@ for name in NAMES:
             scale=1.0)
         for lmk in landmarks[name]]
     landmarks_locks[name].release()
-    
-    
+
+
 
 save_times = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0] + [
     10.0+5.0*i for i in range(20)]

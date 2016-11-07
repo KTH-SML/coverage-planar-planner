@@ -46,14 +46,14 @@ XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
 
 vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
-lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
+#lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
 cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
 rp.wait_for_service('/draw_landmarks')
 draw_landmarks_proxy = rp.ServiceProxy(
     '/draw_landmarks',
     csv.DrawLandmarks)
-    
+
 msg = csv.DrawLandmarksRequest(
     name = MY_NAME,
     landmarks = [lmk.to_msg() for lmk in landmarks])
@@ -84,7 +84,7 @@ draw_landmarks_proxy(msg)
 #    return csv.TradeLandmarksResponse(
 #        success = len(mine)>0,
 #        your_landmarks=[lmk.to_msg() for lmk in yours])
-#    
+#
 #yield_srv = rp.Service(
 #    'yield_landmarks',
 #    csv.TradeLandmarks,
@@ -135,7 +135,7 @@ draw_landmarks_proxy(msg)
 #    return csv.TradeLandmarksResponse(
 #        success = success,
 #        your_landmarks=[lmk.to_msg() for lmk in yours])
-#    
+#
 #trade_srv = rp.Service(
 #    'trade_landmarks',
 #    csv.TradeLandmarks,
@@ -179,7 +179,7 @@ def take_landmarks_handler(req):
         success = success,
         client_new_landmarks = [lmk.to_msg() for lmk in client_new_landmarks]
         )
-        
+
 take_landmarks_service = rp.Service(
     'take_landmarks',
     csv.TakeLandmarks,
@@ -193,7 +193,7 @@ for partner in PARTNERS:
         '/'+partner+'/take_landmarks',
         csv.TakeLandmarks
         )
-    
+
 
 
 
@@ -237,7 +237,7 @@ def add_random_landmarks_handler(req):
     incoming_landmarks |= new_lmks
     incoming_landmarks_lock.release()
     return csv.AddRandomLandmarksResponse()
-    
+
 add_lmk_srv = rp.Service(
     'add_random_landmarks',
     csv.AddRandomLandmarks,
@@ -281,7 +281,7 @@ def add_landmark_handler(req):
     incoming_landmarks.add(lmk)
     incoming_landmarks_lock.release()
     return csv.AddLandmarkResponse()
-    
+
 add_lmk_srv = rp.Service(
     'add_landmark',
     csv.AddLandmark,
@@ -299,7 +299,7 @@ def change_landmarks_handler(req):
         landmarks = [lmk.to_msg() for lmk in landmarks])
     draw_landmarks_proxy(msg)
     return csv.ChangeLandmarksResponse()
-    
+
 chg_lmk_srv = rp.Service(
     'change_landmarks',
     csv.ChangeLandmarks,
@@ -323,7 +323,7 @@ def work():
     global sensor, sensor_lock
     global landmarks, landmarks_lock
     global incoming_landmarks, incoming_landmarks_lock
-    global vel_pub, lmks_pub
+    global vel_pub#, lmks_pub
     global kp, kn
     global last_trade_time
     global possible_partners
