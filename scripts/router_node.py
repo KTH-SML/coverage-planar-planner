@@ -17,6 +17,7 @@ import coverage_planar_planner.msg as cms
 
 
 rp.init_node('router_node')
+ALTITUDE = rp.get_param('altitude')
 
 cmd_pose_pub = rp.Publisher(
     'cmd_pose',
@@ -54,7 +55,7 @@ def vel_callback(msg):
     pose_lock.release()
     if not ps is None:
         translation = ps.position
-        translation.z = 1.0
+        translation.z = ALTITUDE
         rotation = ps.orientation
         cmd_pose = gms.PoseStamped()
         cmd_pose.pose = gms.Pose(position=translation, orientation=rotation)
