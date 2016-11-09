@@ -40,9 +40,9 @@ vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
 cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
-rp.wait_for_service('/draw_landmarks')
+rp.wait_for_service('draw_landmarks')
 draw_landmarks_proxy = rp.ServiceProxy(
-    '/draw_landmarks',
+    'draw_landmarks',
     csv.DrawLandmarks)
 
 
@@ -220,4 +220,3 @@ if __name__ == '__main__':
     while not rp.is_shutdown():
         work()
         rate.sleep()
-        
