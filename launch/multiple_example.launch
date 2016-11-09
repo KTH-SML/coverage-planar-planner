@@ -1,6 +1,11 @@
 <launch>
 
+
+
 <rosparam param='names'>'Axel Bo Calle David'</rosparam>
+
+
+
 
 <group ns='Axel'>
 
@@ -19,8 +24,13 @@ pkg='coverage_planar_planner'
 type='simulator_node.py'
 />
 
-</group>
+<node
+name='router_node'
+pkg='coverage_planar_planner'
+type='router_node.py'
+/>
 
+</group>
 
 
 
@@ -41,8 +51,13 @@ type='multiple_planner_node.py'
 name='simulator_node'
 pkg='coverage_planar_planner'
 type='simulator_node.py'
->
-</node>
+/>
+
+<node
+name='router_node'
+pkg='coverage_planar_planner'
+type='router_node.py'
+/>
 
 </group>
 
@@ -66,6 +81,12 @@ type='multiple_planner_node.py'
 name='simulator_node'
 pkg='coverage_planar_planner'
 type='simulator_node.py'
+/>
+
+<node
+name='router_node'
+pkg='coverage_planar_planner'
+type='router_node.py'
 />
 
 </group>
@@ -92,6 +113,12 @@ type='multiple_planner_node.py'
 name='simulator_node'
 pkg='coverage_planar_planner'
 type='simulator_node.py'
+/>
+
+<node
+name='router_node'
+pkg='coverage_planar_planner'
+type='router_node.py'
 />
 
 </group>
@@ -137,5 +164,8 @@ pkg='rqt_plot'
 type='rqt_plot'
 args='total_coverage'
 />
+
+
+
 
 </launch>

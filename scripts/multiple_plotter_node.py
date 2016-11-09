@@ -2,7 +2,7 @@
 """This node plots the sensors and the landmarks with matplotlib.
 
 Subscriptions:
-    - <name>/pose for <name> = Axel, Bo, Calle, David
+    - <name>/pose for <name> in rp.get_param('names').split()
 
 Services offered:
     - draw_landmarks

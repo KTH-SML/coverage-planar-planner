@@ -3,15 +3,19 @@ import random as rdm
 
 import landmark as lm
 
+import rospy as rp
+
+
+
 NUM_LANDMARKS_SQRT = 25
 XLIM = (-3,3)
 YLIM = (-3,3)
 
-landmarks = dict()
-landmarks["Axel"] = set()
-landmarks["Bo"] = set()
-landmarks["Calle"] = set()
-landmarks["David"] = set()
+NAMES = rp.get_param('/names').split()
+
+LANDMARKS = dict()
+for name in NAMES:
+	LANDMARKS[name] = set()
 
 rdm.seed(89)
 
@@ -24,7 +28,7 @@ for index in range(NUM_LANDMARKS_SQRT**2):
 	ori = (1,0)
 	lmk = lm.Landmark(pos, ori)
 	#landmarks[rdm.choice(landmarks.keys())].add(lmk)
-	landmarks["Axel"].add(lmk)
+	LANDMARKS[NAMES[0]].add(lmk)
 
 
 if __name__ == '__main__':

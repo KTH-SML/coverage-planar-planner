@@ -39,7 +39,7 @@ NAMES = rp.get_param('/names').split()
 MY_NAME = rp.get_param('name')
 PARTNERS = filter(lambda x: not x == MY_NAME, NAMES)
 possible_partners = list(PARTNERS)
-landmarks = init_lmks.landmarks[MY_NAME]
+landmarks = init_lmks.LANDMARKS[MY_NAME]
 sensor = init_sns.sensors[MY_NAME]
 
 XLIM = rp.get_param('xlim', (-5,5))
