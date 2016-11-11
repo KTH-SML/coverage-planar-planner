@@ -57,12 +57,12 @@
 
 
   <node
-  name='router_node'
-  pkg='coverage_planar_planner'
-  type='router_node.py'>
-  <remap from="odometry" to="ground_truth/odometry" />
-  <remap from="cmd_traj" to="command/trajectory" />
-  <remap from="cmd_pose" to="UNUSED/pose" />
+      name='router_node'
+      pkg='coverage_planar_planner'
+      type='router_node.py'>
+    <remap from="odometry" to="ground_truth/odometry" />
+    <remap from="cmd_traj" to="command/trajectory" />
+    <remap from="cmd_pose" to="UNUSED/pose" />
   </node>
 
   <node

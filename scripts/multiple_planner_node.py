@@ -49,9 +49,9 @@ vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
 cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
-rp.wait_for_service('draw_landmarks')
+rp.wait_for_service('/draw_landmarks')
 draw_landmarks_proxy = rp.ServiceProxy(
-    'draw_landmarks',
+    '/draw_landmarks',
     csv.DrawLandmarks)
 
 msg = csv.DrawLandmarksRequest(
@@ -352,7 +352,7 @@ def work():
         w = uts.saturate(w, sn)
     coverage = sensor.coverage(landmarks)
     sensor_lock.release()
-    if np.linalg.norm(v)+np.linalg.norm(w) < 2e-4*coverage:
+    if np.linalg.norm(v)+np.linalg.norm(w) < 2e-2:
         v = np.zeros(2)
         w = 0.0
         rp.logwarn(MY_NAME + ': possible partners: ' + str(possible_partners))
