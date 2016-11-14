@@ -23,6 +23,8 @@
 
 <group ns="$(arg mav_name)">
 
+  <rosparam param='altitude'>0.5</rosparam>
+
   <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
     <arg name="mav_name" value="$(arg mav_name)" />
     <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />

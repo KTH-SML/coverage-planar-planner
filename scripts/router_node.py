@@ -34,8 +34,7 @@ cmd_traj_pub = rp.Publisher(
 pose_pub = rp.Publisher(
     'pose',
     cms.Pose,
-    queue_size=10
-)
+    queue_size=10)
 
 pose_lock = thd.Lock()
 saved_pose = None
