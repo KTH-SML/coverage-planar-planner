@@ -1,9 +1,4 @@
 #! /usr/bin/env python
-"""This node routes:
-    - Velocity messages to geometry_msgs/Twist messages;
-    - geometry_msgs/Pose messages to Pose messages.
-"""
-
 import rospy as rp
 import tf.transformations as tft
 import threading as thd
@@ -16,7 +11,7 @@ import trajectory_msgs.msg as tms
 import coverage_planar_planner.msg as cms
 
 
-rp.init_node('router_node')
+rp.init_node('rotors_bridge')
 ALTITUDE = rp.get_param('altitude')
 
 cmd_pose_pub = rp.Publisher(

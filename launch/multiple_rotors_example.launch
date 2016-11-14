@@ -50,9 +50,9 @@ type='multiple_planner_node.py'
 />
 
 <node
-    name='router_node'
+    name='rotors_bridge'
     pkg='coverage_planar_planner'
-    type='router_node.py'>
+    type='rotors_bridge.py'>
   <remap from="odometry" to="ground_truth/odometry" />
   <remap from="cmd_traj" to="command/trajectory" />
   <remap from="cmd_pose" to="UNUSED/pose" />
@@ -93,9 +93,9 @@ type='multiple_planner_node.py'
 />
 
 <node
-    name='router_node'
+    name='rotors_bridge'
     pkg='coverage_planar_planner'
-    type='router_node.py'>
+    type='rotors_bridge.py'>
   <remap from="odometry" to="ground_truth/odometry" />
   <remap from="cmd_traj" to="command/trajectory" />
   <remap from="cmd_pose" to="UNUSED/pose" />
@@ -137,9 +137,9 @@ type='multiple_planner_node.py'
 />
 
 <node
-    name='router_node'
+    name='rotors_bridge'
     pkg='coverage_planar_planner'
-    type='router_node.py'>
+    type='rotors_bridge.py'>
   <remap from="odometry" to="ground_truth/odometry" />
   <remap from="cmd_traj" to="command/trajectory" />
   <remap from="cmd_pose" to="UNUSED/pose" />
@@ -183,9 +183,9 @@ type='multiple_planner_node.py'
 />
 
 <node
-    name='router_node'
+    name='rotors_bridge'
     pkg='coverage_planar_planner'
-    type='router_node.py'>
+    type='rotors_bridge.py'>
   <remap from="odometry" to="ground_truth/odometry" />
   <remap from="cmd_traj" to="command/trajectory" />
   <remap from="cmd_pose" to="UNUSED/pose" />
