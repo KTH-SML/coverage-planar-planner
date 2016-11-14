@@ -24,7 +24,7 @@ def saturate(array, ths):
 
 
 
-def perp(array):
+def ccws_perp(array):
     x = array[0]
     y = array[1]
     return np.array([-y, x])

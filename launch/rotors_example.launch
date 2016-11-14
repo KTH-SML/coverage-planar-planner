@@ -63,9 +63,20 @@
       pkg='coverage_planar_planner'
       type='rotors_bridge.py'>
     <remap from="odometry" to="ground_truth/odometry" />
-    <remap from="cmd_traj" to="command/trajectory" />
-    <remap from="cmd_pose" to="UNUSED/pose" />
+    <!--remap from="cmd_traj" to="command/trajectory" /-->
+    <!--remap from="cmd_pose" to="UNUSED/pose" /-->
   </node>
+
+
+  <node
+      name='lee_controller_bridge'
+      pkg='coverage_planar_planner'
+      type='lee_controller_bridge.py'>
+    <!--remap from="odometry" to="ground_truth/odometry" /-->
+    <remap from="cmd_traj" to="command/trajectory"/>
+    <!--remap from="cmd_pose" to="UNUSED/pose" /-->
+  </node>
+
 
   <node
   name='rqt_service_caller'

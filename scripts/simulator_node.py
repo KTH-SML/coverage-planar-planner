@@ -35,7 +35,7 @@ def work():
     new_time = rp.get_time()
     dt = new_time - time
     position += lin_vel*dt
-    orientation += uts.perp(orientation)*ang_vel*dt
+    orientation += uts.ccws_perp(orientation)*ang_vel*dt
     orientation = uts.normalize(orientation)
     pose = cms.Pose(position=position, orientation=orientation)
     gms_pose = gms.Pose()
