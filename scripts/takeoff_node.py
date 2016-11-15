@@ -12,6 +12,8 @@ rp.init_node('takeoff_node')
 
 ALTITUDE = rp.get_param('altitude')
 
+RATE = rp.Rate(10)
+
 cmd_traj_pub = rp.Publisher(
     'cmd_traj',
     tms.MultiDOFJointTrajectory,
@@ -44,6 +46,13 @@ rp.Service(
     csv.Takeoff,
     takeoff_handler)
 
+lock.acquire()
+while not start_flag:
+    lock.release()
+    RATE.sleep()
+    lock.acquire()
+lock.release()
+
 def work():
     global start_flag
     lock.acquire()
@@ -67,7 +76,7 @@ def work():
         cmd_traj_pub.publish(cmd_traj)
 
 
-RATE = rp.Rate(10)
-while not rp.is_shutdown():
+
+for idx in range(10):
     work()
     RATE.sleep()

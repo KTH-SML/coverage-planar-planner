@@ -27,10 +27,10 @@ sensor = sn.Sensor(fp=fp.EggFootprint())
 
 rp.init_node('planner_node')
 
-KP = rp.get_param('position_gain', 3.0)
+KP = rp.get_param('position_gain', 1.0)
 KN = rp.get_param('orientation_gain', 1.0)
-SP = rp.get_param('velocity_saturation', 0.5)
-SN = rp.get_param('angular_velocity_saturation', 0.5)
+SP = rp.get_param('velocity_saturation', 0.3)
+SN = rp.get_param('angular_velocity_saturation', 0.3)
 
 XLIM = rp.get_param('xlim', (-5,5))
 YLIM = rp.get_param('ylim', (-5,5))
@@ -234,6 +234,10 @@ def work():
         #v = -smart_gain(coverage,KP/10,KP)*sensor.cov_pos_grad(landmarks)
         v = -KP/len(landmarks)*sensor.cov_pos_grad(landmarks)
         v = uts.saturate(v,SP)
+        if p[0] <= XLIM[0] and v[0] <= 0.0 or p[0] >= XLIM[1] and v[0] >= 0.0:
+            v[0] = 0.0
+        if p[1] <= YLIM[0] and v[1] <= 0.0 or p[1] >= YLIM[1] and v[1] >= 0.0:
+            v[1] = 0.0
         #w = -smart_gain(coverage,KN/10,KN)*np.cross(n, sensor.cov_ori_grad(landmarks))
         w = -KN/len(landmarks)*np.cross(n, sensor.cov_ori_grad(landmarks))
         w = uts.saturate(w, SN)
