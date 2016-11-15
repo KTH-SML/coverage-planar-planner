@@ -1,0 +1,31 @@
+<launch>
+
+<node
+  name='mobile_landmark_follower_node'
+  pkg='coverage_planar_planner'
+  type='mobile_landmark_follower_node.py'/>
+
+<node
+  name='mobile_landmark_simulator_node'
+  pkg='coverage_planar_planner'
+  type='mobile_landmark_simulator_node.py'/>
+
+<node
+  name='plotter_node'
+  pkg='coverage_planar_planner'
+  type='plotter_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+/>
+
+<node
+  name='rqt_service_caller'
+  pkg='rqt_service_caller'
+  type='rqt_service_caller'
+/>
+
+</launch>

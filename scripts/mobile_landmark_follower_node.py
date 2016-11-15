@@ -80,6 +80,9 @@ lock.release()
 
 def mobile_landmark_callback(msg):
     global landmark
+    lock.acquire()
+    landmark = lm.Landmark.from_msg(msg)
+    lock.release()
 
 rp.Subscriber(
     'mobile_landmark',
@@ -122,42 +125,6 @@ pose_sub = rp.Subscriber(
     pose_cb)
 
 
-def add_landmark_handler(req):
-    global landmarks
-    global lock
-    lmk = lm.Landmark.from_msg(req.landmark)
-    lock.acquire()
-    landmarks.add(lmk)
-    lock.release()
-    msg = csv.DrawLandmarksRequest(
-        name = None,
-        landmarks = [lmk.to_msg() for lmk in landmarks])
-    draw_landmarks_proxy(msg)
-    return csv.AddLandmarkResponse()
-add_lmk_srv = rp.Service(
-    'add_landmark',
-    csv.AddLandmark,
-    add_landmark_handler)
-
-
-def change_landmarks_handler(req):
-    global landmarks
-    global lock
-    lmks = [lm.Landmark.from_message(lmk_msg) for lmk_msg in req.landmarks]
-    lock.acquire()
-    landmarks = set(lmks)
-    lock.release()
-    msg = csv.DrawLandmarksRequest(
-        name = None,
-        landmarks = [lmk.to_msg() for lmk in landmarks])
-    draw_landmarks_proxy(msg)
-    return csv.ChangeLandmarksResponse()
-chg_lmk_srv = rp.Service(
-    'change_landmarks',
-    csv.ChangeLandmarks,
-    change_landmarks_handler
-)
-
 
 
 
@@ -170,26 +137,27 @@ chg_lmk_srv = rp.Service(
 
 
 def work():
-    global sensor, landmarks
+    global sensor, landmark
     global vel_pub, lmks_pub
     global KP, KN
     global lock
     lock.acquire()
-    coverage = sensor.coverage(landmarks)
+    coverage = sensor.perception(landmark)
     p = sensor.pos
     n = sensor.ori
-    if len(landmarks) == 0:
-        v = np.zeros(2)
-        w = 0.0
-    else:
-        #v = -smart_gain(coverage,KP/10,KP)*sensor.cov_pos_grad(landmarks)
-        v = -KP/len(landmarks)*sensor.cov_pos_grad(landmarks)
-        v = uts.saturate(v,SP)
-        #w = -smart_gain(coverage,KN/10,KN)*np.cross(n, sensor.cov_ori_grad(landmarks))
-        w = -KN/len(landmarks)*np.cross(n, sensor.cov_ori_grad(landmarks))
-        w = uts.saturate(w, SN)
-    coverage = sensor.coverage(landmarks)
-    lmks_msg = [lmk.to_msg() for lmk in landmarks]
+    #v = -smart_gain(coverage,KP/10,KP)*sensor.cov_pos_grad(landmarks)
+    v = -KP*sensor.per_pos_grad(landmark)
+    v = uts.saturate(v,SP)
+    #w = -smart_gain(coverage,KN/10,KN)*np.cross(n, sensor.cov_ori_grad(landmarks))
+    w = -KN*np.cross(n, sensor.per_ori_grad(landmark))
+    w = uts.saturate(w, SN)
+    coverage = sensor.perception(landmark)
+    lmks_msg = [landmark.to_msg()]
+    req = csv.DrawLandmarksRequest(
+        name=None,
+        landmarks=lmks_msg
+    )
+    draw_landmarks_proxy.call(req)
     lock.release()
     cov_vel = cms.Velocity(linear=v, angular=w)
     vel_pub.publish(cov_vel)
