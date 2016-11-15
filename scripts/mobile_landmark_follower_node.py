@@ -19,13 +19,12 @@ import utilities as uts
 
 
 lock = thd.Lock()
-#landmarks = set([lm.Landmark(ori=[-1,0.1])])
-landmarks = set()
+landmark = lm.Landmark()
 sensor = sn.Sensor(fp=fp.EggFootprint())
 
 
 
-rp.init_node('planner_node')
+rp.init_node('mobile_landmark_follower_node')
 
 KP = rp.get_param('position_gain', 3.0)
 KN = rp.get_param('orientation_gain', 1.0)
@@ -79,66 +78,18 @@ lock.release()
 
 
 
+def mobile_landmark_callback(msg):
+    global landmark
 
-
-
-
-
-
-
-
-def add_landmark_arc_handler(req):
-    global landmarks
-    global lock
-    num = req.number
-    rd = req.radius
-    th1 = req.thetamin
-    th2 = req.thetamax
-    lmks = set()
-    for th in np.linspace(np.pi*th1,np.pi*th2,num):
-        ori = np.array([np.cos(th), np.sin(th)])
-        pos = rd*ori
-        lmk = lm.Landmark(pos=pos, ori=ori)
-        lmks.add(lmk)
-    lock.acquire()
-    landmarks |= lmks
-    lock.release()
-    msg = csv.DrawLandmarksRequest(
-        name = None,
-        landmarks = [lmk.to_msg() for lmk in landmarks])
-    draw_landmarks_proxy(msg)
-    return csv.AddLandmarkArcResponse()
-
-add_lma_srv = rp.Service(
-    'add_landmark_arc',
-    csv.AddLandmarkArc,
-    add_landmark_arc_handler)
-
-
-
-
-
-def add_random_landmarks_handler(req):
-    global landmarks
-    global lock
-    lmks = [lm.Landmark.random(
-	    	xlim=0.3*np.array(XLIM),
-	    	ylim=0.3*np.array(YLIM))
-    	for index in range(req.num)]
-    lock.acquire()
-    landmarks |= set(lmks)
-    lock.release()
-    msg = csv.DrawLandmarksRequest(
-        name = None,
-        landmarks = [lmk.to_msg() for lmk in landmarks])
-    draw_landmarks_proxy(msg)
-    return csv.AddRandomLandmarksResponse()
-
-add_lmk_srv = rp.Service(
-    'add_random_landmarks',
-    csv.AddRandomLandmarks,
-    add_random_landmarks_handler
+rp.Subscriber(
+    'mobile_landmark',
+    cms.Landmark,
+    mobile_landmark_callback
 )
+
+
+
+
 
 
 

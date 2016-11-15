@@ -61,6 +61,14 @@
   </node>
 
   <node
+    name='takeoff_node'
+    pkg='coverage_planar_planner'
+    type='takeoff_node.py'>
+    <remap from='odometry' to='ground_truth/odometry'/>
+    <remap from='cmd_traj' to='command/trajectory'/>
+  </node>
+
+  <node
   name='planner_node'
   pkg='coverage_planar_planner'
   type='planner_node.py'

@@ -28,7 +28,7 @@ incoming_landmarks_lock = thd.Lock()
 sensor_lock = thd.Lock()
 
 
-rp.init_node('planner_node')
+rp.init_node('multiple_planner_node')
 
 kp = rp.get_param('position_gain', 1.0)
 kn = rp.get_param('orientation_gain', 1.0)
