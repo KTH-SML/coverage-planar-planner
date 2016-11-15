@@ -116,7 +116,7 @@ def draw_landmarks_handler(msg):
     return csv.DrawLandmarksResponse()
 
 draw_landmarks_service = rp.Service(
-    'draw_landmarks',
+    '/draw_landmarks',
     csv.DrawLandmarks,
     draw_landmarks_handler)
 

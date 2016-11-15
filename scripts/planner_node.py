@@ -29,7 +29,7 @@ rp.init_node('planner_node')
 
 KP = rp.get_param('position_gain', 3.0)
 KN = rp.get_param('orientation_gain', 1.0)
-SP = rp.get_param('velocity_saturation', 1.0)
+SP = rp.get_param('velocity_saturation', 0.5)
 SN = rp.get_param('angular_velocity_saturation', 0.5)
 
 XLIM = rp.get_param('xlim', (-5,5))
@@ -40,12 +40,10 @@ vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
 cov_pub = rp.Publisher('coverage', sms.Float64, queue_size=10)
 
-rp.wait_for_service('draw_landmarks')
+rp.wait_for_service('/draw_landmarks')
 draw_landmarks_proxy = rp.ServiceProxy(
-    'draw_landmarks',
+    '/draw_landmarks',
     csv.DrawLandmarks)
-
-
 
 
 

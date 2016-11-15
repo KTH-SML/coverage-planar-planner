@@ -59,9 +59,9 @@
 
 
   <node
-      name='rotors_bridge'
+      name='odometry_to_pose_bridge'
       pkg='coverage_planar_planner'
-      type='rotors_bridge.py'>
+      type='odometry_to_pose_bridge.py'>
     <remap from="odometry" to="ground_truth/odometry" />
     <!--remap from="cmd_traj" to="command/trajectory" /-->
     <!--remap from="cmd_pose" to="UNUSED/pose" /-->
@@ -69,9 +69,9 @@
 
 
   <node
-      name='lee_controller_bridge'
+      name='cmd_vel_to_cmd_traj_bridge'
       pkg='coverage_planar_planner'
-      type='lee_controller_bridge.py'>
+      type='cmd_vel_to_cmd_traj_bridge.py'>
     <!--remap from="odometry" to="ground_truth/odometry" /-->
     <remap from="cmd_traj" to="command/trajectory"/>
     <!--remap from="cmd_pose" to="UNUSED/pose" /-->

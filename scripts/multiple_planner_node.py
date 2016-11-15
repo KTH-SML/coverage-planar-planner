@@ -30,9 +30,9 @@ sensor_lock = thd.Lock()
 
 rp.init_node('planner_node')
 
-kp = rp.get_param('position_gain', 3.0)
+kp = rp.get_param('position_gain', 1.0)
 kn = rp.get_param('orientation_gain', 1.0)
-sp = rp.get_param('velocity_saturation', 1.0)
+sp = rp.get_param('velocity_saturation', 0.5)
 sn = rp.get_param('angular_velocity_saturation', 0.3)
 
 NAMES = rp.get_param('/names').split()
@@ -58,94 +58,6 @@ msg = csv.DrawLandmarksRequest(
     name = MY_NAME,
     landmarks = [lmk.to_msg() for lmk in landmarks])
 draw_landmarks_proxy(msg)
-
-
-#def yield_landmarks_handler(req):
-#    global landmarks
-#    global sensor
-#    global lock
-#    global PARTNERS, possible_partners
-#    your_pos = np.array(req.position)
-#    your_ori = np.array(req.orientation)
-#    you = sn.Sensor(pos=your_pos, ori=your_ori, fp=fp.ConvexFootprint())
-#    your_lmks = [lm.Landmark.from_msg(lmkmsg) for lmkmsg in req.landmarks]
-#    mine = set()
-#    yours = set()
-#    lock.acquire()
-#    for lmk in your_lmks:
-#        if sensor.perception(lmk) < you.perception(lmk):
-#            mine.add(lmk)
-#        else:
-#            yours.add(lmk)
-#    if len(mine)>0:
-#        possible_partners = list(PARTNERS)
-#        landmarks |= mine
-#    lock.release()
-#    return csv.TradeLandmarksResponse(
-#        success = len(mine)>0,
-#        your_landmarks=[lmk.to_msg() for lmk in yours])
-#
-#yield_srv = rp.Service(
-#    'yield_landmarks',
-#    csv.TradeLandmarks,
-#    yield_landmarks_handler)
-
-#yield_proxies = dict()
-#for partner in PARTNERS:
-#    rp.wait_for_service('/'+partner+'/yield_landmarks')
-#    yield_proxies[partner] = rp.ServiceProxy(
-#        '/'+partner+'/yield_landmarks', csv.TradeLandmarks)
-
-
-
-#def trade_landmarks_handler(req):
-#    global landmarks
-#    global sensor
-#    global lock
-#    global PARTNERS, possible_partners
-#    global MY_NAME
-#    your_pos = np.array(req.position)
-#    your_ori = np.array(req.orientation)
-#    you = sn.Sensor(pos=your_pos, ori=your_ori, fp=fp.EggFootprint())
-#    your_lmks = [lm.Landmark.from_msg(lmkmsg) for lmkmsg in req.landmarks]
-#    mine = set()
-#    yours = set()
-#    success = False
-#    lock.acquire()
-#    for lmk in landmarks:
-#        if you.perception(lmk) < sensor.perception(lmk):
-#            yours.add(lmk)
-#            success = True
-#        else:
-#            mine.add(lmk)
-#    for lmk in your_lmks:
-#        if sensor.perception(lmk) < you.perception(lmk):
-#            mine.add(lmk)
-#            success = True
-#        else:
-#            yours.add(lmk)
-#    if success:
-#        landmarks = mine
-#        possible_partners = list(PARTNERS)
-#    lock.release()
-#    msg = csv.DrawLandmarksRequest(
-#        name = MY_NAME,
-#        landmarks = [lmk.to_msg() for lmk in landmarks])
-#    draw_landmarks_proxy(msg)
-#    return csv.TradeLandmarksResponse(
-#        success = success,
-#        your_landmarks=[lmk.to_msg() for lmk in yours])
-#
-#trade_srv = rp.Service(
-#    'trade_landmarks',
-#    csv.TradeLandmarks,
-#    trade_landmarks_handler)
-
-#trade_proxies = dict()
-#for partner in PARTNERS:
-#    rp.wait_for_service('/'+partner+'/trade_landmarks')
-#    trade_proxies[partner] = rp.ServiceProxy(
-#        '/'+partner+'/trade_landmarks', csv.TradeLandmarks)
 
 
 
@@ -183,19 +95,15 @@ def take_landmarks_handler(req):
 take_landmarks_service = rp.Service(
     'take_landmarks',
     csv.TakeLandmarks,
-    take_landmarks_handler
-    )
+    take_landmarks_handler)
 
 take_landmarks_proxies = dict()
 for partner in PARTNERS:
+    rp.logwarn(partner)
     rp.wait_for_service('/'+partner+'/take_landmarks')
     take_landmarks_proxies[partner] = rp.ServiceProxy(
         '/'+partner+'/take_landmarks',
-        csv.TakeLandmarks
-        )
-
-
-
+        csv.TakeLandmarks)
 
 
 
@@ -352,7 +260,7 @@ def work():
         w = uts.saturate(w, sn)
     coverage = sensor.coverage(landmarks)
     sensor_lock.release()
-    if np.linalg.norm(v)+np.linalg.norm(w) < 2e-2:
+    if np.linalg.norm(v)+np.linalg.norm(w) < 1e-3*coverage:
         v = np.zeros(2)
         w = 0.0
         rp.logwarn(MY_NAME + ': possible partners: ' + str(possible_partners))

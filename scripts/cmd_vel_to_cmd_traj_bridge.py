@@ -12,7 +12,7 @@ import coverage_planar_planner.msg as cms
 
 import utilities as utl
 
-rp.init_node('lee_controller_bridge')
+rp.init_node('cmd_vel_to_cmd_traj_bridge')
 ALTITUDE = rp.get_param('altitude')
 
 cmd_traj_pub = rp.Publisher(

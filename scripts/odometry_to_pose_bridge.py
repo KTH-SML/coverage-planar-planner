@@ -8,7 +8,7 @@ import numpy as np
 import tf.transformations as tft
 
 
-rp.init_node('rotors_bridge')
+rp.init_node('odometry_to_pose_bridge')
 
 pub = rp.Publisher('pose', cms.Pose, queue_size=10)
 
