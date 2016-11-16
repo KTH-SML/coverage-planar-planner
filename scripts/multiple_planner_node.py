@@ -30,9 +30,9 @@ sensor_lock = thd.Lock()
 
 rp.init_node('multiple_planner_node')
 
-kp = rp.get_param('position_gain', 1.0)
-kn = rp.get_param('orientation_gain', 1.0)
-sp = rp.get_param('velocity_saturation', 0.5)
+kp = rp.get_param('position_gain', 0.5)
+kn = rp.get_param('orientation_gain', 0.5)
+sp = rp.get_param('velocity_saturation', 0.3)
 sn = rp.get_param('angular_velocity_saturation', 0.3)
 
 NAMES = rp.get_param('/names').split()
@@ -225,7 +225,7 @@ chg_lmk_srv = rp.Service(
 
 
 FAST_RATE = rp.Rate(6e1)
-SLOW_RATE = rp.Rate(0.5)
+SLOW_RATE = rp.Rate(5.0)
 
 def work():
     global sensor, sensor_lock
@@ -260,9 +260,9 @@ def work():
         w = uts.saturate(w, sn)
     coverage = sensor.coverage(landmarks)
     sensor_lock.release()
-    if np.linalg.norm(v)+np.linalg.norm(w) < 1e-3*coverage:
-        v = np.zeros(2)
-        w = 0.0
+    if np.linalg.norm(v) < 1e-3*len(landmarks) and np.linalg.norm(w) < 1e-3*len(landmarks):
+        #v = np.zeros(2)
+        #w = 0.0
         rp.logwarn(MY_NAME + ': possible partners: ' + str(possible_partners))
         if len(possible_partners)>0:
             request = csv.TakeLandmarksRequest(

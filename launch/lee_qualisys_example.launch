@@ -1,0 +1,82 @@
+<launch>
+
+
+
+<arg name="mav_name" default="Neo"/>
+<arg name="world_name" default="basic"/>
+<arg name="enable_logging" default="false"/>
+<arg name="enable_ground_truth" default="true"/>
+<arg name="log_file" default="$(arg mav_name)"/>
+<arg name="output" default="screen"/>
+
+
+
+<include file="$(find qualisys)/launch/qualisys.launch">
+</include>
+
+<remap from='$(arg mav_name)/odom' to='$(arg mav_name)/odometry'/>
+<include file="$(find qualisys)/launch/qualisys_odom.launch">
+  <arg name='model' value='$(arg mav_name)'/>
+</include>
+
+
+<group ns="$(arg mav_name)">
+
+  <rosparam param='altitude'>0.5</rosparam>
+
+  <node name="lee_position_controller_node" pkg="rotors_control"
+      type="lee_position_controller_node" output="screen">
+    <!--remap from="odometry" to="ground_truth/odometry" /-->
+  </node>
+
+  <node
+    name='takeoff_node'
+    pkg='coverage_planar_planner'
+    type='takeoff_node.py'>
+    <remap from='cmd_traj' to='command/trajectory'/>
+  </node>
+
+  <node
+  name='planner_node'
+  pkg='coverage_planar_planner'
+  type='planner_node.py'
+  />
+
+  <node
+      name='plotter_node'
+      pkg='coverage_planar_planner'
+      type='plotter_node.py'>
+  </node>
+
+
+
+  <node
+      name='odometry_to_pose_bridge'
+      pkg='coverage_planar_planner'
+      type='odometry_to_pose_bridge.py'>
+  </node>
+
+
+  <node
+      name='cmd_vel_to_cmd_traj_bridge'
+      pkg='coverage_planar_planner'
+      type='cmd_vel_to_cmd_traj_bridge.py'>
+    <remap from="cmd_traj" to="command/trajectory"/>
+  </node>
+
+
+  <node
+  name='rqt_service_caller'
+  pkg='rqt_service_caller'
+  type='rqt_service_caller'
+  />
+
+
+
+
+
+</group>
+
+
+
+</launch>

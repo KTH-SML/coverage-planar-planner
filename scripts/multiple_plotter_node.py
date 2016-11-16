@@ -22,8 +22,8 @@ import sensor as sn
 
 
 rp.init_node('plotter_node')
-XLIM = rp.get_param('xlim', (-5,5))
-YLIM = rp.get_param('ylim', (-5,5))
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
 NAMES = rp.get_param('names').split()
 COLORS = rp.get_param('colors', '#1f618d #cb4335 #b7950b #659D32').split()
 COLDIC = dict()
@@ -37,7 +37,7 @@ fig = plt.figure(figsize=(10,10))
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
 plt.axis('equal')
-plt.axis(XLIM+YLIM)
+plt.axis([XLIM[0]-2.0, XLIM[1]+2.0, YLIM[0]-2.0, YLIM[1]+2.0])
 plt.grid()
 
 
@@ -186,7 +186,7 @@ def work():
 
 
 
-rate = rp.Rate(10e1)
+rate = rp.Rate(1e1)
 if __name__ == '__main__':
     initial_time = rp.get_time()
     while not rp.is_shutdown():

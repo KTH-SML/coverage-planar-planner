@@ -1,0 +1,305 @@
+<launch>
+
+
+
+<rosparam param='names'>'Axel Bo'</rosparam>
+
+<arg name="mav_name" default="firefly"/>
+<arg name="world_name" default="basic"/>
+<arg name="enable_logging" default="false"/>
+<arg name="enable_ground_truth" default="true"/>
+<arg name="log_file" default="coverage_planar_planner_multiple_rotors_example_log_file"/>
+
+
+<env name="GAZEBO_MODEL_PATH" value="$(find rotors_gazebo)/models"/>
+<include file="$(find gazebo_ros)/launch/empty_world.launch">
+  <arg name="world_name" value="$(find rotors_gazebo)/worlds/$(arg world_name).world"/>
+  <!-- <arg name="debug" value="true" /> -->
+  <arg name="paused" value="true" />
+  <!-- <arg name="gui" value="false" /> -->
+</include>
+
+
+
+<group ns='Axel'>
+
+<rosparam param='name'>'Axel'</rosparam>
+<rosparam param='altitude'>0.5</rosparam>
+<rosparam param="initial_position">0.0 -1.20</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
+  <arg name="mav_name" value="$(arg mav_name)" />
+  <arg name="namespace" value="Axel" />
+  <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />
+  <arg name="enable_logging" value="$(arg enable_logging)" />
+  <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+  <arg name="log_file" value="$(arg log_file)"/>
+  <arg name="x" value="0.0"/>
+  <arg name="y" value="-1.20"/>
+</include>
+
+<!--node name="lee_position_controller_node" pkg="rotors_control"
+    type="lee_position_controller_node" output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+</node-->
+
+<node name="lee_position_controller_node" pkg="rotors_control"
+    type="lee_position_controller_node" output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+</node>
+
+<node name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+  <remap from="odometry" to="ground_truth/odometry" />
+</node>
+
+<node
+    name='cmd_vel_to_cmd_traj_bridge'
+    pkg='coverage_planar_planner'
+    type='cmd_vel_to_cmd_traj_bridge.py'>
+  <remap from="cmd_traj" to="command/trajectory" />
+</node>
+
+</group>
+
+
+
+
+<group ns='Bo'>
+
+<rosparam param='name'>'Bo'</rosparam>
+<rosparam param='altitude'>1.0</rosparam>
+<rosparam param="initial_position">0.0 -0.40</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
+  <arg name="mav_name" value="$(arg mav_name)" />
+  <arg name="namespace" value="Bo" />
+  <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />
+  <arg name="enable_logging" value="$(arg enable_logging)" />
+  <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+  <arg name="log_file" value="$(arg log_file)"/>
+  <arg name="x" value="0.0"/>
+  <arg name="y" value="-0.40"/>
+</include>
+
+<!--node name="lee_position_controller_node" pkg="rotors_control"
+    type="lee_position_controller_node" output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+</node-->
+
+<node name="lee_position_controller_node" pkg="rotors_control"
+    type="lee_position_controller_node" output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+</node>
+
+<node
+name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+  <remap from="odometry" to="ground_truth/odometry" />
+</node>
+
+<node
+    name='cmd_vel_to_cmd_traj_bridge'
+    pkg='coverage_planar_planner'
+    type='cmd_vel_to_cmd_traj_bridge.py'>
+  <remap from="cmd_traj" to="command/trajectory" />
+</node>
+
+</group>
+
+
+
+
+
+<!--group ns='Calle'>
+
+<rosparam param='name'>'Calle'</rosparam>
+<rosparam param='altitude'>1.5</rosparam>
+<rosparam param="initial_position">0.0 0.40</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
+  <arg name="mav_name" value="$(arg mav_name)" />
+  <arg name="namespace" value="Calle" />
+  <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />
+  <arg name="enable_logging" value="$(arg enable_logging)" />
+  <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+  <arg name="log_file" value="$(arg log_file)"/>
+  <arg name="x" value="0.0"/>
+  <arg name="y" value="0.40"/>
+</include>
+
+<node
+name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+  name="mav_linear_mpc"
+  pkg="mav_linear_mpc"
+  type="mav_linear_mpc_node_controller_only"
+  respawn="false"
+  clear_params="true"
+  output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+  <rosparam file="$(find mav_linear_mpc)/parameters/linear_mpc.yaml" />
+</node>
+
+<node
+  name="PD_attitude_controller"
+  pkg="mav_linear_mpc"
+  type="PD_attitude_controller_node"
+  respawn="true"
+  clear_params="true"
+  output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+  <rosparam file="$(find mav_linear_mpc)/parameters/PD_attitude.yaml" />
+</node>
+
+<node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+  <remap from="odometry" to="ground_truth/odometry" />
+</node>
+
+<node
+    name='cmd_vel_to_cmd_traj_bridge'
+    pkg='coverage_planar_planner'
+    type='cmd_vel_to_cmd_traj_bridge.py'>
+  <remap from="cmd_traj" to="command/trajectory" />
+</node>
+
+</group-->
+
+
+
+
+
+
+
+
+<!--group ns='David'>
+
+<rosparam param='name'>'David'</rosparam>
+<rosparam param='altitude'>2.0</rosparam>
+<rosparam param="initial_position">0.0 1.20</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
+  <arg name="mav_name" value="$(arg mav_name)" />
+  <arg name="namespace" value="David" />
+  <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />
+  <arg name="enable_logging" value="$(arg enable_logging)" />
+  <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+  <arg name="log_file" value="$(arg log_file)"/>
+  <arg name="x" value="0.0"/>
+  <arg name="y" value="1.20"/>
+</include>
+
+<node
+  name="mav_linear_mpc"
+  pkg="mav_linear_mpc"
+  type="mav_linear_mpc_node_controller_only"
+  respawn="false"
+  clear_params="true"
+  output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+  <rosparam file="$(find mav_linear_mpc)/parameters/linear_mpc.yaml" />
+</node>
+
+<node
+  name="PD_attitude_controller"
+  pkg="mav_linear_mpc"
+  type="PD_attitude_controller_node"
+  respawn="true"
+  clear_params="true"
+  output="screen">
+  <remap from="odometry" to="ground_truth/odometry" />
+  <rosparam file="$(find mav_linear_mpc)/parameters/PD_attitude.yaml" />
+</node>
+
+<node name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+  <remap from="odometry" to="ground_truth/odometry" />
+</node>
+
+<node
+    name='cmd_vel_to_cmd_traj_bridge'
+    pkg='coverage_planar_planner'
+    type='cmd_vel_to_cmd_traj_bridge.py'>
+  <remap from="cmd_traj" to="command/trajectory" />
+</node>
+
+</group-->
+
+
+
+
+
+
+
+
+
+
+
+<!--node
+name='rqt_service_caller'
+pkg='rqt_service_caller'
+type='rqt_service_caller'
+/-->
+
+<node
+name='multiple_plotter_node'
+pkg='coverage_planar_planner'
+type='multiple_plotter_node.py'
+/>
+
+<!--node
+name='coverage_tracker'
+pkg='coverage_planar_planner'
+type='coverage_tracker.py'
+/-->
+
+<!--node
+name='plot_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='Axel/coverage Bo/coverage Calle/coverage David/coverage'
+/-->
+
+<!--node
+name='plot_total_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='total_coverage'
+/-->
+
+
+
+
+</launch>

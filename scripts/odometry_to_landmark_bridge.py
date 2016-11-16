@@ -8,9 +8,9 @@ import numpy as np
 import tf.transformations as tft
 
 
-rp.init_node('odometry_to_pose_bridge')
+rp.init_node('odometry_to_landmark_bridge')
 
-pub = rp.Publisher('pose', cms.Landmark, queue_size=10)
+pub = rp.Publisher('mobile_landmark', cms.Landmark, queue_size=10)
 
 def odometry_callback(msg):
     pose = cms.Landmark()
@@ -26,7 +26,7 @@ def odometry_callback(msg):
     pose.orientation = np.array(matrix[0:2,0])
     pub.publish(pose)
 
-rp.Subscriber('odometry', nms.Odometry, odometry_callback)
+rp.Subscriber('mobile_landmark_odometry', nms.Odometry, odometry_callback)
 
 
 rp.spin()

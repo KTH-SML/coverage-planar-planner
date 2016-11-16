@@ -31,17 +31,22 @@ saved_pose = None
 last_time = None
 new_time = None
 
+YAW_GAIN = rp.get_param('yaw_gain', 0.0)
+
+
 def cmd_vel_callback(msg):
     global pose_lock, saved_pose, last_time, new_time
     pose_lock.acquire()
     ps = cp.copy(saved_pose)
     pose_lock.release()
-    if last_time is None:
-        last_time = rp.get_time()
-    else:
-        last_time = new_time
-    new_time = rp.get_time()
-    time_step = new_time - rp.get_time()
+    #if last_time is None:
+    #    last_time = rp.get_rostime()
+    #else:
+    #    last_time = cp.copy(new_time)
+    #new_time = rp.get_rostime()
+    #time_step = float(new_time.secs-last_time.secs) + 1e-9*np.float128(new_time.nsecs-last_time.nsecs)
+    #rp.logwarn(new_time)
+    #rp.logwarn(time_step)
     if ps is None:
         return
     twist = gms.Twist()
@@ -72,8 +77,8 @@ def cmd_vel_callback(msg):
     twist.angular.z = msg.angular
     translation.z = ALTITUDE
     rot_mat = np.eye(4)
-    rot_mat[0:2,0] = np.array(ps.orientation) + msg.angular*utl.ccws_perp(ps.orientation)*time_step
-    rot_mat[0:2,1] = utl.ccws_perp(ps.orientation) - msg.angular*np.array(ps.orientation)*time_step
+    rot_mat[0:2,0] = np.array(ps.orientation) + YAW_GAIN*msg.angular*utl.ccws_perp(ps.orientation)
+    rot_mat[0:2,1] = utl.ccws_perp(ps.orientation) - YAW_GAIN*msg.angular*np.array(ps.orientation)
     quat = tft.quaternion_from_matrix(rot_mat)
     rotation = gms.Quaternion()
     rotation.x = quat[0]

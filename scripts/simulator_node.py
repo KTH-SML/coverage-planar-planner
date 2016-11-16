@@ -17,8 +17,8 @@ gms_pose_pub = rp.Publisher('gms_pose', gms.Pose, queue_size=10)
 
 lin_vel = np.zeros(2)
 ang_vel = 0.0
-position = np.array(rp.get_param('initial_position', [0.0, 0.0]))
-orientation = np.array(rp.get_param('initial_orientation', [1.0, 0.0]))
+position = np.array([float(elem) for elem in rp.get_param('initial_position', "0.0 0.0").split()])
+orientation = np.array([float(elem) for elem in rp.get_param('initial_orientation', "1.0 0.0").split()])
 time = rp.get_time()
 
 def vel_cb(vel):

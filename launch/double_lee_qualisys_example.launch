@@ -1,0 +1,152 @@
+<launch>
+
+
+
+<rosparam param='names'>Neo taz</rosparam>
+
+<!--arg name="mav_name" default="firefly"/-->
+<arg name="world_name" default="basic"/>
+<arg name="enable_logging" default="false"/>
+<arg name="enable_ground_truth" default="true"/>
+<arg name="log_file" default="coverage_planar_planner_double_lee_qualisys_example_log_file"/>
+
+<arg name='vehicle1' default='Neo'/>
+<arg name='vehicle2' default='taz'/>
+
+
+
+<include file="$(find qualisys)/launch/qualisys.launch">
+</include>
+
+<remap from='$(arg vehicle1)/odom' to='$(arg vehicle1)/odometry'/>
+<include file="$(find qualisys)/launch/qualisys_odom.launch">
+  <arg name='model' value='$(arg vehicle1)'/>
+</include>
+
+<remap from='$(arg vehicle2)/odom' to='$(arg vehicle2)/odometry'/>
+<include file="$(find qualisys)/launch/qualisys_odom.launch">
+  <arg name='model' value='$(arg vehicle2)'/>
+</include>
+
+
+
+
+
+<group ns='$(arg vehicle1)'>
+
+<rosparam param='name'>'Neo'</rosparam>
+<rosparam param='altitude'>1.0</rosparam>
+<!--rosparam param="initial_position">0.0 -1.20</rosparam-->
+<!--rosparam param="initial_orientation">1.0 0.0</rosparam-->
+
+<node name="lee_position_controller_node" pkg="rotors_control"
+    type="lee_position_controller_node" output="screen">
+  <!--remap from="odometry" to="ground_truth/odometry" /-->
+</node>
+
+<node name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+  <!-- from="odometry" to="ground_truth/odometry" /-->
+</node>
+
+<node
+    name='cmd_vel_to_cmd_traj_bridge'
+    pkg='coverage_planar_planner'
+    type='cmd_vel_to_cmd_traj_bridge.py'>
+  <remap from="cmd_traj" to="command/trajectory" />
+</node>
+
+</group>
+
+
+
+
+<group ns='$(arg vehicle2)'>
+
+<rosparam param='name'>'taz'</rosparam>
+<rosparam param='altitude'>2.0</rosparam>
+<!--rosparam param="initial_position">0.0 -0.40</rosparam-->
+<!--rosparam param="initial_orientation">1.0 0.0</rosparam-->
+
+
+
+<node name="lee_position_controller_node" pkg="rotors_control"
+    type="lee_position_controller_node" output="screen">
+  <!--remap from="odometry" to="ground_truth/odometry" /-->
+</node>
+
+<node
+name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+  <!--remap from="odometry" to="ground_truth/odometry" /-->
+</node>
+
+<node
+    name='cmd_vel_to_cmd_traj_bridge'
+    pkg='coverage_planar_planner'
+    type='cmd_vel_to_cmd_traj_bridge.py'>
+  <remap from="cmd_traj" to="command/trajectory" />
+</node>
+
+</group>
+
+
+
+
+
+
+
+
+
+
+
+<node
+name='rqt_service_caller'
+pkg='rqt_service_caller'
+type='rqt_service_caller'
+/>
+
+<node
+name='multiple_plotter_node'
+pkg='coverage_planar_planner'
+type='multiple_plotter_node.py'
+/>
+
+<!--node
+name='coverage_tracker'
+pkg='coverage_planar_planner'
+type='coverage_tracker.py'
+/-->
+
+<!--node
+name='plot_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='Axel/coverage Bo/coverage Calle/coverage David/coverage'
+/-->
+
+<!--node
+name='plot_total_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='total_coverage'
+/-->
+
+
+
+
+</launch>

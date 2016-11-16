@@ -1,0 +1,159 @@
+<launch>
+
+
+
+<rosparam param='names'>'Axel Bo'</rosparam>
+
+
+
+
+<group ns='Axel'>
+
+<rosparam param='name'>'Axel'</rosparam>
+<rosparam param="initial_position">0.0 -0.75</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<node name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+/>
+
+<!--node
+name='router_node'
+pkg='coverage_planar_planner'
+type='router_node.py'
+/-->
+
+</group>
+
+
+
+
+<group ns='Bo'>
+
+<rosparam param='name'>'Bo'</rosparam>
+<rosparam param="initial_position">0.0 -0.25</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<node
+name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+/>
+
+<!--node
+name='router_node'
+pkg='coverage_planar_planner'
+type='router_node.py'
+/-->
+
+</group>
+
+
+
+
+
+<!--group ns='Calle'>
+
+<rosparam param='name'>'Calle'</rosparam>
+<rosparam param="initial_position">0.0 0.25</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<node
+name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+/>
+
+</group-->
+
+
+
+
+
+
+
+
+<!--group ns='David'>
+
+<rosparam param='name'>'David'</rosparam>
+<rosparam param="initial_position">0.0 0.75</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+
+<node name='planner_node'
+pkg='coverage_planar_planner'
+type='multiple_planner_node.py'
+/>
+
+<node
+name='simulator_node'
+pkg='coverage_planar_planner'
+type='simulator_node.py'
+/>
+
+</group-->
+
+
+
+
+
+
+
+
+
+
+
+<node
+name='rqt_service_caller'
+pkg='rqt_service_caller'
+type='rqt_service_caller'
+/>
+
+<node
+name='multiple_plotter_node'
+pkg='coverage_planar_planner'
+type='multiple_plotter_node.py'
+/>
+
+<!--node
+name='coverage_tracker'
+pkg='coverage_planar_planner'
+type='coverage_tracker.py'
+/-->
+
+<!--node
+name='plot_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='Axel/coverage Bo/coverage Calle/coverage David/coverage'
+/-->
+
+<!--node
+name='plot_total_coverage'
+pkg='rqt_plot'
+type='rqt_plot'
+args='total_coverage'
+/-->
+
+
+
+
+</launch>
