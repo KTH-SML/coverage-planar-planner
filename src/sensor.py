@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 import utilities as uts
 import footprints as fps
 
+import rospy as rp
+
+
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
+
 
 
 class Sensor(object):
@@ -85,7 +91,7 @@ class Sensor(object):
     @ori.setter
     def ori(self, value):
 	    self._ori = uts.normalize(value)
-	    
+
     @property
     def color(self):
         return self._color
@@ -93,8 +99,8 @@ class Sensor(object):
     @color.setter
     def color(self, value):
         self._color = value
-        
-        
+
+
 
 
     def draw(self,
@@ -108,7 +114,7 @@ class Sensor(object):
         x = self.pos[0]
         y = self.pos[1]
         point = plt.scatter(x,y,
-            s=75.0,
+            s=15.0,
             color='#121f1f',
             alpha=alpha,
             edgecolor='#121f1f',
@@ -124,9 +130,9 @@ class Sensor(object):
 	            edgecolor='#121f1f',
 	            linewidth=2)
         return point, arrow
-        
-        
-        
+
+
+
 
 
 

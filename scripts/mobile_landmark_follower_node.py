@@ -31,8 +31,8 @@ KN = rp.get_param('orientation_gain', 1.0)
 SP = rp.get_param('velocity_saturation', 0.5)
 SN = rp.get_param('angular_velocity_saturation', 0.5)
 
-XLIM = rp.get_param('xlim', (-5,5))
-YLIM = rp.get_param('ylim', (-5,5))
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
 
 vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
@@ -148,6 +148,10 @@ def work():
     #v = -smart_gain(coverage,KP/10,KP)*sensor.cov_pos_grad(landmarks)
     v = -KP*sensor.per_pos_grad(landmark)
     v = uts.saturate(v,SP)
+    if p[0] <= XLIM[0] and v[0] <= 0.0 or p[0] >= XLIM[1] and v[0] >= 0.0:
+        v[0] = 0.0
+    if p[1] <= YLIM[0] and v[1] <= 0.0 or p[1] >= YLIM[1] and v[1] >= 0.0:
+        v[1] = 0.0
     #w = -smart_gain(coverage,KN/10,KN)*np.cross(n, sensor.cov_ori_grad(landmarks))
     w = -KN*np.cross(n, sensor.per_ori_grad(landmark))
     w = uts.saturate(w, SN)

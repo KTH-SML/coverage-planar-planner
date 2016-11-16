@@ -1,5 +1,8 @@
 <launch>
 
+  <rosparam param='xlim'>-0.5 0.5</rosparam>
+  <rosparam param='ylim'>-0.5 0.5</rosparam>
+
 <node
   name='mobile_landmark_follower_node'
   pkg='coverage_planar_planner'

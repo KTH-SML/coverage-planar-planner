@@ -1,5 +1,8 @@
 <launch>
 
+<rosparam param='xlim'>-0.5 0.5</rosparam>
+<rosparam param='ylim'>-0.5 0.5</rosparam>
+
 <node
 name='planner_node'
 pkg='coverage_planar_planner'
@@ -24,18 +27,18 @@ pkg='rqt_service_caller'
 type='rqt_service_caller'
 />
 
-<node
+<!--node
 name='plot_pose'
 pkg='rqt_plot'
 type='rqt_plot'
 args='/pose/position /pose/yaw'
-/>
+/-->
 
-<node
+<!--node
 name='plot_coverage'
 pkg='rqt_plot'
 type='rqt_plot'
 args='/coverage'
-/>
+/-->
 
 </launch>

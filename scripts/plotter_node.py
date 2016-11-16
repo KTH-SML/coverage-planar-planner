@@ -13,8 +13,10 @@ import landmark as lm
 import sensor as sn
 
 rp.init_node('plotter_node')
-XLIM = rp.get_param('xlim', (-5,5))
-YLIM = rp.get_param('ylim', (-5,5))
+#XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+#YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
+XLIM = (-5,5)
+YLIM = (-5,5)
 
 plt.ion()
 fig = plt.figure()

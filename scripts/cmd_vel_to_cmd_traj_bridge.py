@@ -16,8 +16,8 @@ rp.init_node('cmd_vel_to_cmd_traj_bridge')
 ALTITUDE = rp.get_param('altitude')
 
 
-XLIM = rp.get_param('xlim', (-1.0, 1.0))
-YLIM = rp.get_param('ylim', (-1.0, 1.0))
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
 
 
 cmd_traj_pub = rp.Publisher(
@@ -46,24 +46,28 @@ def cmd_vel_callback(msg):
         return
     twist = gms.Twist()
     translation = gms.Vector3()
-    if ps.position[0] <= XLIM[0] and msg.linear[0] <= 0.0:
-        twist.linear.x = 0.0
-        translation.x = XLIM[0]
-    elif ps.position[0] >= XLIM[1] and msg.linear[0] >= 0.0:
-        twist.linear.x = 0.0
-        translation.x = XLIM[1]
-    else:
-        twist.linear.x = msg.linear[0]
-        translation.x = ps.position[0]
-    if ps.position[1] <= YLIM[0] and msg.linear[1] <= 0.0:
-        twist.linear.y = 0.0
-        translation.y = YLIM[0]
-    elif ps.position[1] >= YLIM[1] and msg.linear[1] >= 0.0:
-        twist.linear.y = 0.0
-        translation.y = YLIM[1]
-    else:
-        twist.linear.y = msg.linear[1]
-        translation.y = ps.position[1]
+    # if ps.position[0] <= XLIM[0] and msg.linear[0] <= 0.0:
+    #     twist.linear.x = 0.0
+    #     translation.x = XLIM[0]
+    # elif ps.position[0] >= XLIM[1] and msg.linear[0] >= 0.0:
+    #     twist.linear.x = 0.0
+    #     translation.x = XLIM[1]
+    # else:
+    #     twist.linear.x = msg.linear[0]
+    #     translation.x = ps.position[0]
+    # if ps.position[1] <= YLIM[0] and msg.linear[1] <= 0.0:
+    #     twist.linear.y = 0.0
+    #     translation.y = YLIM[0]
+    # elif ps.position[1] >= YLIM[1] and msg.linear[1] >= 0.0:
+    #     twist.linear.y = 0.0
+    #     translation.y = YLIM[1]
+    # else:
+    #     twist.linear.y = msg.linear[1]
+    #     translation.y = ps.position[1]
+    twist.linear.x = msg.linear[0]
+    translation.x = ps.position[0]
+    twist.linear.y = msg.linear[1]
+    translation.y = ps.position[1]
     twist.linear.z = 0.0
     twist.angular.z = msg.angular
     translation.z = ALTITUDE

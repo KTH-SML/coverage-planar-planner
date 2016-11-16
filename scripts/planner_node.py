@@ -32,8 +32,8 @@ KN = rp.get_param('orientation_gain', 1.0)
 SP = rp.get_param('velocity_saturation', 0.3)
 SN = rp.get_param('angular_velocity_saturation', 0.3)
 
-XLIM = rp.get_param('xlim', (-5,5))
-YLIM = rp.get_param('ylim', (-5,5))
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
 
 vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
@@ -122,8 +122,8 @@ def add_random_landmarks_handler(req):
     global landmarks
     global lock
     lmks = [lm.Landmark.random(
-	    	xlim=0.3*np.array(XLIM),
-	    	ylim=0.3*np.array(YLIM))
+	    	xlim=np.array(XLIM),
+	    	ylim=np.array(YLIM))
     	for index in range(req.num)]
     lock.acquire()
     landmarks |= set(lmks)
