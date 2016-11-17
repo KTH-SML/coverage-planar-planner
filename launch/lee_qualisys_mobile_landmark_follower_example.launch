@@ -12,6 +12,7 @@
 
 
 
+
 <include file="$(find qualisys)/launch/qualisys.launch">
 </include>
 
@@ -29,7 +30,12 @@
 
 <group ns="$(arg mav_name)">
 
-  <rosparam param='altitude'>0.5</rosparam>
+  <rosparam>
+    altitude: 0.5
+    xlim: "-0.8 2.4"
+    ylim: "-2.0 1.4"
+  </rosparam>
+
 
   <node name="lee_position_controller_node" pkg="rotors_control"
       type="lee_position_controller_node" output="screen">

@@ -3,6 +3,8 @@
 
 
 <rosparam param='names'>'Axel Bo'</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <arg name="mav_name" default="firefly"/>
 <arg name="world_name" default="basic"/>
@@ -27,6 +29,8 @@
 <rosparam param='altitude'>0.5</rosparam>
 <rosparam param="initial_position">0.0 -1.20</rosparam>
 <rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
   <arg name="mav_name" value="$(arg mav_name)" />
@@ -79,6 +83,8 @@ type='multiple_planner_node.py'
 <rosparam param='altitude'>1.0</rosparam>
 <rosparam param="initial_position">0.0 -0.40</rosparam>
 <rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
   <arg name="mav_name" value="$(arg mav_name)" />

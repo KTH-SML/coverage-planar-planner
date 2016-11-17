@@ -3,7 +3,7 @@
   <arg name='mav_name' default='morph'/>
 
   <rosparam param='xlim'>1.0 4.0</rosparam>
-  <rosparam param='ylim'>1.0 4.0</rosparam>
+  <rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
   <node
     name='odometry_to_pose_bridge'

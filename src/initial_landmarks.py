@@ -7,7 +7,7 @@ import rospy as rp
 
 
 
-NUM_LANDMARKS_SQRT = 10
+NUM_LANDMARKS_SQRT = rp.get_param('num_landmarks_sqrt', 20)
 XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
 YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
 

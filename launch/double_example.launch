@@ -3,6 +3,7 @@
 
 
 <rosparam param='names'>'Axel Bo'</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
 
 
@@ -12,6 +13,8 @@
 <rosparam param='name'>'Axel'</rosparam>
 <rosparam param="initial_position">0.0 -0.75</rosparam>
 <rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <node name='planner_node'
 pkg='coverage_planar_planner'
@@ -40,6 +43,8 @@ type='router_node.py'
 <rosparam param='name'>'Bo'</rosparam>
 <rosparam param="initial_position">0.0 -0.25</rosparam>
 <rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <node
 name='planner_node'

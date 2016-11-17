@@ -37,7 +37,7 @@ SCALE = (XLIM[1]-XLIM[0]+YLIM[1]-YLIM[0])*0.5
 rp.logwarn(XLIM)
 rp.logwarn(YLIM)
 
-kp = rp.get_param('position_gain', 0.3*SCALE)
+kp = rp.get_param('position_gain', 1.0*SCALE)
 kn = rp.get_param('orientation_gain', 0.5)
 sp = rp.get_param('velocity_saturation', 0.05*SCALE)
 sn = rp.get_param('angular_velocity_saturation', 0.3)
@@ -300,6 +300,7 @@ def work():
                 rp.logwarn(err)
         else:
             rp.logwarn(MY_NAME + ': no possible partners')
+            possible_partners = list(PARTNERS)
         rate = SLOW_RATE
     else:
         possible_partners = list(PARTNERS)

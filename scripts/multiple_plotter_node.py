@@ -22,6 +22,7 @@ import sensor as sn
 
 
 rp.init_node('plotter_node')
+NUM_LANDMARKS_SQRT = rp.get_param('num_landmarks_sqrt', 20)
 XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
 YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
 SCALE = (XLIM[1]-XLIM[0]+YLIM[1]-YLIM[0])*0.5
@@ -43,8 +44,9 @@ plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
 #plt.axis('equal')
 #plt.axis([XLIM[0]-2.0, XLIM[1]+2.0, YLIM[0]-2.0, YLIM[1]+2.0])
-plt.xlim(XLIM)
-plt.ylim(YLIM)
+EXTRA = 0.25*np.array([-SCALE, SCALE])
+plt.xlim((np.array(XLIM)+EXTRA).tolist())
+plt.ylim((np.array(YLIM)+EXTRA).tolist())
 plt.grid()
 
 
@@ -178,7 +180,7 @@ def work():
                 lmk.draw(
                     color=COLDIC[name],
                     draw_orientation=False,
-                    scale=SCALE)
+                    scale=SCALE*50.0/float(NUM_LANDMARKS_SQRT))
                 for lmk in landmarks[name]]
             draw_landmarks_flags[name] = False
         landmarks_locks[name].release()

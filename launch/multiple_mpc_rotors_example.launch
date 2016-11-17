@@ -3,12 +3,14 @@
 
 
 <rosparam param='names'>'Axel Bo Calle David'</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <arg name="mav_name" default="firefly"/>
 <arg name="world_name" default="basic"/>
 <arg name="enable_logging" default="false"/>
 <arg name="enable_ground_truth" default="true"/>
-<arg name="log_file" default="coverage_planar_planner_multiple_rotors_example_log_file"/>
+<arg name="log_file" default="coverage_planar_planner_multiple_mpc_rotors_example_log_file"/>
 
 
 <env name="GAZEBO_MODEL_PATH" value="$(find rotors_gazebo)/models"/>
@@ -27,6 +29,8 @@
 <rosparam param='altitude'>0.5</rosparam>
 <rosparam param="initial_position">[0.0, -1.20]</rosparam>
 <rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
   <arg name="mav_name" value="$(arg mav_name)" />
@@ -96,6 +100,8 @@ type='multiple_planner_node.py'
 <rosparam param='altitude'>1.0</rosparam>
 <rosparam param="initial_position">[0.0, -0.40]</rosparam>
 <rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
   <arg name="mav_name" value="$(arg mav_name)" />
@@ -167,6 +173,8 @@ type='multiple_planner_node.py'
 <rosparam param='altitude'>1.5</rosparam>
 <rosparam param="initial_position">[0.0, 0.40]</rosparam>
 <rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
   <arg name="mav_name" value="$(arg mav_name)" />
@@ -241,6 +249,8 @@ type='multiple_planner_node.py'
 <rosparam param='altitude'>2.0</rosparam>
 <rosparam param="initial_position">[0.0, 1.20]</rosparam>
 <rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
 
 <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
   <arg name="mav_name" value="$(arg mav_name)" />

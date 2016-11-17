@@ -31,8 +31,6 @@ saved_pose = None
 last_time = None
 new_time = None
 
-YAW_GAIN = rp.get_param('yaw_gain', 0.0)
-
 
 def cmd_vel_callback(msg):
     global pose_lock, saved_pose, last_time, new_time
@@ -77,8 +75,8 @@ def cmd_vel_callback(msg):
     twist.angular.z = msg.angular
     translation.z = ALTITUDE
     rot_mat = np.eye(4)
-    rot_mat[0:2,0] = np.array(ps.orientation) + YAW_GAIN*msg.angular*utl.ccws_perp(ps.orientation)
-    rot_mat[0:2,1] = utl.ccws_perp(ps.orientation) - YAW_GAIN*msg.angular*np.array(ps.orientation)
+    rot_mat[0:2,0] = np.array(ps.orientation)
+    rot_mat[0:2,1] = utl.ccws_perp(ps.orientation)
     quat = tft.quaternion_from_matrix(rot_mat)
     rotation = gms.Quaternion()
     rotation.x = quat[0]
