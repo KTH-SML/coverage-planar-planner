@@ -1,17 +1,17 @@
 <launch>
 
 
-
 <rosparam param='names'>'Axel Bo Calle David'</rosparam>
-
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
 
 
 <group ns='Axel'>
 
 <rosparam param='name'>'Axel'</rosparam>
-<rosparam param="initial_position">[0.0, -0.75]</rosparam>
-<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam param="initial_position">0.0 -0.75</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
 <node name='planner_node'
 pkg='coverage_planar_planner'
@@ -38,8 +38,9 @@ type='router_node.py'
 <group ns='Bo'>
 
 <rosparam param='name'>'Bo'</rosparam>
-<rosparam param="initial_position">[0.0, -0.25]</rosparam>
-<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam param="initial_position">0.0 -0.25</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
 <node
 name='planner_node'
@@ -68,8 +69,9 @@ type='router_node.py'
 <group ns='Calle'>
 
 <rosparam param='name'>'Calle'</rosparam>
-<rosparam param="initial_position">[0.0, 0.25]</rosparam>
-<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam param="initial_position">0.0 0.25</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
 <node
 name='planner_node'
@@ -101,8 +103,9 @@ type='router_node.py'
 <group ns='David'>
 
 <rosparam param='name'>'David'</rosparam>
-<rosparam param="initial_position">[0.0, 0.75]</rosparam>
-<rosparam param="initial_orientation">[1.0, 0.0]</rosparam>
+<rosparam param="initial_position">0.0 0.75</rosparam>
+<rosparam param="initial_orientation">1.0 0.0</rosparam>
+<rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
 
 <node name='planner_node'
 pkg='coverage_planar_planner'
@@ -145,7 +148,7 @@ pkg='coverage_planar_planner'
 type='multiple_plotter_node.py'
 />
 
-<node
+<!--node
 name='coverage_tracker'
 pkg='coverage_planar_planner'
 type='coverage_tracker.py'
@@ -163,7 +166,7 @@ name='plot_total_coverage'
 pkg='rqt_plot'
 type='rqt_plot'
 args='total_coverage'
-/>
+/-->
 
 
 

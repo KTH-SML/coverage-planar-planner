@@ -1,0 +1,97 @@
+<launch>
+
+
+
+<arg name="mav_name" default="firefly"/>
+<arg name="world_name" default="basic"/>
+<arg name="enable_logging" default="false"/>
+<arg name="enable_ground_truth" default="true"/>
+<arg name="log_file" default="$(arg mav_name)"/>
+<arg name="output" default="screen"/>
+
+
+<env name="GAZEBO_MODEL_PATH" value="$(find rotors_gazebo)/models"/>
+<include file="$(find gazebo_ros)/launch/empty_world.launch">
+  <arg name="world_name" value="$(find rotors_gazebo)/worlds/$(arg world_name).world"/>
+  <!-- <arg name="debug" value="true" /> -->
+  <arg name="paused" value="true" />
+  <!-- <arg name="gui" value="false" /> -->
+</include>
+
+
+<group ns="$(arg mav_name)">
+
+  <rosparam param='altitude'>0.5</rosparam>
+  <rosparam command="load" file="$(find coverage_planar_planner)/param/cage.yaml" />
+
+
+  <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
+    <arg name="mav_name" value="$(arg mav_name)" />
+    <!--arg name="namespace" value="Axel" /-->
+    <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />
+    <arg name="enable_logging" value="$(arg enable_logging)" />
+    <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+    <arg name="log_file" value="$(arg log_file)"/>
+    <arg name="x" value="0.0"/>
+    <arg name="y" value="-1.20"/>
+  </include>
+
+  <node name="lee_position_controller_node" pkg="rotors_control"
+      type="lee_position_controller_node" output="screen">
+    <remap from="odometry" to="ground_truth/odometry"/>
+  </node>
+
+  <node
+    name='takeoff_node'
+    pkg='coverage_planar_planner'
+    type='takeoff_node.py'>
+    <remap from='cmd_traj' to='command/trajectory'/>
+  </node>
+
+  <node
+    name='mobile_landmark_follower_node'
+    pkg='coverage_planar_planner'
+    type='mobile_landmark_follower_node.py'>
+  </node>
+
+  <node
+      name='plotter_node'
+      pkg='coverage_planar_planner'
+      type='plotter_node.py'>
+  </node>
+
+
+
+  <node
+      name='odometry_to_pose_bridge'
+      pkg='coverage_planar_planner'
+      type='odometry_to_pose_bridge.py'>
+      <remap from='odometry' to='ground_truth/odometry'/>
+  </node>
+
+
+  <node
+      name='cmd_vel_to_cmd_traj_bridge'
+      pkg='coverage_planar_planner'
+      type='cmd_vel_to_cmd_traj_bridge.py'>
+    <remap from="cmd_traj" to="command/trajectory"/>
+  </node>
+
+
+  <node
+    name='rqt_service_caller'
+    pkg='rqt_service_caller'
+    type='rqt_service_caller'/>
+
+
+  <node
+    name='mobile_landmark_simulator_node'
+    pkg='coverage_planar_planner'
+    type='mobile_landmark_simulator_node.py'/>
+
+
+</group>
+
+
+
+</launch>

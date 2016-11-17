@@ -24,6 +24,11 @@ import sensor as sn
 rp.init_node('plotter_node')
 XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
 YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
+SCALE = (XLIM[1]-XLIM[0]+YLIM[1]-YLIM[0])*0.5
+
+rp.logwarn(XLIM)
+rp.logwarn(YLIM)
+
 NAMES = rp.get_param('names').split()
 COLORS = rp.get_param('colors', '#1f618d #cb4335 #b7950b #659D32').split()
 COLDIC = dict()
@@ -36,8 +41,10 @@ plt.ion()
 fig = plt.figure(figsize=(10,10))
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
-plt.axis('equal')
-plt.axis([XLIM[0]-2.0, XLIM[1]+2.0, YLIM[0]-2.0, YLIM[1]+2.0])
+#plt.axis('equal')
+#plt.axis([XLIM[0]-2.0, XLIM[1]+2.0, YLIM[0]-2.0, YLIM[1]+2.0])
+plt.xlim(XLIM)
+plt.ylim(YLIM)
 plt.grid()
 
 
@@ -158,7 +165,7 @@ def work():
             points[name].remove()
             if not arrows[name] == None:
                 arrows[name].remove()
-            points[name], arrows[name] = sensors[name].draw()
+            points[name], arrows[name] = sensors[name].draw(scale=SCALE)
             draw_sensor_flags[name] = False
         sensor_locks[name].release()
         landmarks_locks[name].acquire()
@@ -171,7 +178,7 @@ def work():
                 lmk.draw(
                     color=COLDIC[name],
                     draw_orientation=False,
-                    scale=5.0)
+                    scale=SCALE)
                 for lmk in landmarks[name]]
             draw_landmarks_flags[name] = False
         landmarks_locks[name].release()

@@ -27,7 +27,7 @@ class Landmark(object):
         ori = uts.normalize(np.array(msg.orientation))
         return cls(pos, ori)
 
-        
+
     @classmethod
     def random(cls,
             xlim=(-1.0, 1.0),
@@ -98,7 +98,7 @@ class Landmark(object):
         x = self.pos[0]
         y = self.pos[1]
         point = plt.scatter(x,y,
-            s=scale*25.0,
+            s=scale*20.0,
             marker='s',
             color=color,
             alpha=alpha,
@@ -107,19 +107,19 @@ class Landmark(object):
             )
         arrow = None
         if draw_orientation:
-            vec = self._ori*scale*0.5
+            vec = self._ori*scale*0.4
             arrow = plt.arrow(x, y, vec[0], vec[1],
-                head_width=scale*0.15,
-                head_length=scale*0.15,
+                head_width=scale*0.12,
+                head_length=scale*0.12,
                 alpha=alpha,
                 facecolor=color,
                 edgecolor=color)
         return point, arrow
-        
-        
-        
-        
-        
+
+
+
+
+
 if __name__ == '__main__':
     lmk = Landmark()
     plt.figure()

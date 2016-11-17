@@ -1,0 +1,23 @@
+<launch>
+
+  <arg name='mav_name' default='morph'/>
+
+  <rosparam param='xlim'>1.0 4.0</rosparam>
+  <rosparam param='ylim'>1.0 4.0</rosparam>
+
+  <node
+    name='odometry_to_pose_bridge'
+    pkg='coverage_planar_planner'
+    type='odometry_to_pose_bridge.py'>
+    <remap from='odometry' to='$(arg mav_name)/msf_core/odometry'/>
+    <remap from='pose' to='coverage_pose'/>
+  </node>
+
+    <node
+      name='coverage_plotter'
+      pkg='coverage_planar_planner'
+      type='plotter_node.py'>
+      <remap from='pose' to='coverage_pose'/>
+    </node>
+
+</launch>

@@ -30,9 +30,16 @@ sensor_lock = thd.Lock()
 
 rp.init_node('multiple_planner_node')
 
-kp = rp.get_param('position_gain', 0.5)
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
+SCALE = (XLIM[1]-XLIM[0]+YLIM[1]-YLIM[0])*0.5
+
+rp.logwarn(XLIM)
+rp.logwarn(YLIM)
+
+kp = rp.get_param('position_gain', 0.3*SCALE)
 kn = rp.get_param('orientation_gain', 0.5)
-sp = rp.get_param('velocity_saturation', 0.3)
+sp = rp.get_param('velocity_saturation', 0.05*SCALE)
 sn = rp.get_param('angular_velocity_saturation', 0.3)
 
 NAMES = rp.get_param('/names').split()
@@ -41,9 +48,6 @@ PARTNERS = filter(lambda x: not x == MY_NAME, NAMES)
 possible_partners = list(PARTNERS)
 landmarks = init_lmks.LANDMARKS[MY_NAME]
 sensor = init_sns.sensors[MY_NAME]
-
-XLIM = rp.get_param('xlim', (-5,5))
-YLIM = rp.get_param('ylim', (-5,5))
 
 vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)
@@ -256,11 +260,16 @@ def work():
     else:
         v = -kp/float(len(landmarks))*sensor.cov_pos_grad(landmarks)
         v = uts.saturate(v, sp)
+        if p[0] <= XLIM[0] and v[0] <= 0.0 or p[0] >= XLIM[1] and v[0] >= 0.0:
+            v[0] = 0.0
+        if p[1] <= YLIM[0] and v[1] <= 0.0 or p[1] >= YLIM[1] and v[1] >= 0.0:
+            v[1] = 0.0
         w = -kn/float(len(landmarks))*np.cross(n, sensor.cov_ori_grad(landmarks))
         w = uts.saturate(w, sn)
     coverage = sensor.coverage(landmarks)
     sensor_lock.release()
-    if np.linalg.norm(v) < 1e-3*len(landmarks) and np.linalg.norm(w) < 1e-3*len(landmarks):
+    stop_ths = 1e-3*coverage/SCALE
+    if np.linalg.norm(v) < stop_ths and np.linalg.norm(w) < stop_ths:
         #v = np.zeros(2)
         #w = 0.0
         rp.logwarn(MY_NAME + ': possible partners: ' + str(possible_partners))

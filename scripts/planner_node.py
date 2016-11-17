@@ -27,13 +27,17 @@ sensor = sn.Sensor(fp=fp.EggFootprint())
 
 rp.init_node('planner_node')
 
-KP = rp.get_param('position_gain', 1.0)
-KN = rp.get_param('orientation_gain', 1.0)
-SP = rp.get_param('velocity_saturation', 0.3)
-SN = rp.get_param('angular_velocity_saturation', 0.3)
-
 XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
 YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
+SCALE = (XLIM[1]-XLIM[0]+YLIM[1]-YLIM[0])*0.5
+
+KP = rp.get_param('position_gain', 0.3*SCALE)
+KN = rp.get_param('orientation_gain', 1.0)
+SP = rp.get_param('velocity_saturation', 0.05*SCALE)
+SN = rp.get_param('angular_velocity_saturation', 0.3)
+
+rp.logwarn(XLIM)
+rp.logwarn(YLIM)
 
 vel_pub = rp.Publisher('cmd_vel', cms.Velocity, queue_size=10)
 #lmks_pub = rp.Publisher('landmarks', cms.LandmarkArray, queue_size=10)

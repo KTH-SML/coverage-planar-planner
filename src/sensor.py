@@ -7,11 +7,6 @@ import footprints as fps
 import rospy as rp
 
 
-XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
-YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
-
-
-
 class Sensor(object):
 
 
@@ -114,14 +109,14 @@ class Sensor(object):
         x = self.pos[0]
         y = self.pos[1]
         point = plt.scatter(x,y,
-            s=15.0,
+            s=1.5*scale,
             color='#121f1f',
             alpha=alpha,
             edgecolor='#121f1f',
             linewidth=2)
         arrow = None
         if draw_orientation:
-            vec = self._ori*0.5
+            vec = self._ori*0.05*scale
             arrow = plt.arrow(x, y, vec[0], vec[1],
 	            head_width=scale*0.03,
 	            head_length=scale*0.03,

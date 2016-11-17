@@ -13,17 +13,20 @@ import landmark as lm
 import sensor as sn
 
 rp.init_node('plotter_node')
-#XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
-#YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
-XLIM = (-5,5)
-YLIM = (-5,5)
+XLIM = [float(elem) for elem in rp.get_param('xlim', "-0.4 2.4").split()]
+YLIM = [float(elem) for elem in rp.get_param('ylim', "-2.0 1.4").split()]
+SCALE = (XLIM[1]-XLIM[0]+YLIM[1]-YLIM[0])*0.5
+
+rp.logwarn(XLIM)
 
 plt.ion()
 fig = plt.figure()
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
-plt.axis('equal')
-plt.axis(XLIM+YLIM)
+#plt.axis('equal')
+#plt.axis(XLIM+YLIM)
+plt.xlim((1.2*np.array(XLIM)).tolist())
+plt.ylim((1.2*np.array(YLIM)).tolist())
 plt.grid()
 
 sensor_lock = thd.Lock()
@@ -88,7 +91,7 @@ def work():
         point.remove()
         if not arrow == None:
             arrow.remove()
-        point, arrow = sensor.draw()
+        point, arrow = sensor.draw(scale=SCALE)
         draw_sensor_flag = False
     sensor_lock.release()
     landmarks_lock.acquire()
@@ -97,7 +100,10 @@ def work():
             lp.remove()
             if not la == None:
                 la.remove()
-        lmks_artists = [lmk.draw(draw_orientation=False) for lmk in landmarks]
+        lmks_artists = [
+            lmk.draw(
+                draw_orientation=False,
+                scale=SCALE) for lmk in landmarks]
         draw_landmarks_flag = False
     landmarks_lock.release()
     plt.draw()
